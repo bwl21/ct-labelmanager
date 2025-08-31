@@ -147,6 +147,122 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: var(--ct-border-radius);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        /* ChurchTools Toast/Tippy Styles */
+        .ct-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1100;
+            min-width: 300px;
+            max-width: 500px;
+            background: white;
+            border-radius: var(--ct-border-radius);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-left: 4px solid;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            animation: slideInRight 0.3s ease-out;
+        }
+        
+        .ct-toast-success {
+            border-left-color: var(--ct-success);
+            background-color: #f0f9f0;
+        }
+        
+        .ct-toast-error {
+            border-left-color: var(--ct-danger);
+            background-color: #fdf2f2;
+        }
+        
+        .ct-toast-warning {
+            border-left-color: #f59e0b;
+            background-color: #fffbeb;
+        }
+        
+        .ct-toast-info {
+            border-left-color: var(--ct-primary);
+            background-color: #eff6ff;
+        }
+        
+        .ct-toast-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: var(--ct-dark);
+        }
+        
+        .ct-toast-message {
+            font-size: 0.875rem;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+        
+        .ct-toast-close {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            cursor: pointer;
+            color: #9ca3af;
+            padding: 0.25rem;
+            line-height: 1;
+        }
+        
+        .ct-toast-close:hover {
+            color: var(--ct-dark);
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+        
+        .ct-toast.slide-out {
+            animation: slideOutRight 0.3s ease-in forwards;
+        }
     </style>
 </head>
 <body>
@@ -299,85 +415,86 @@
                             <span class="text-sm font-medium">{{ bulkColor }}</span>
                         </div>
                         
-                        <div v-if="bulkError" class="mt-3 ct-alert ct-alert-danger">{{ bulkError }}</div>
-                        <div v-if="bulkSuccess" class="mt-3 ct-alert ct-alert-success">{{ bulkSuccess }}</div>
+
                     </div>
                 </div>
 
-                <!-- Create/Edit Form -->
-                <div v-if="showCreateForm || editingTag" class="ct-card mb-4">
-                    <div class="ct-card-header">
-                        <h3 class="font-semibold">{{ editingTag ? 'Edit Tag' : 'Create New Tag' }}</h3>
-                    </div>
-                    <div class="ct-card-body space-y-4">
-                        <div>
-                            <label class="ct-form-label">Tag Name</label>
-                            <input 
-                                v-model="tagForm.name" 
-                                type="text" 
-                                class="ct-form-control" 
-                                placeholder="Enter tag name (1-100 characters)"
-                                maxlength="100"
-                            >
-                            <p class="text-xs text-gray-500 mt-1">{{ tagForm.name.length }}/100 characters</p>
+                <!-- Create/Edit Modal -->
+                <div v-if="showCreateForm || editingTag" class="modal-overlay" @click.self="cancelEdit">
+                    <div class="modal-content">
+                        <div class="ct-card-header">
+                            <h3 class="font-semibold">{{ editingTag ? 'Edit Tag' : 'Create New Tag' }}</h3>
                         </div>
-                        <div>
-                            <label class="ct-form-label">Description</label>
-                            <input 
-                                v-model="tagForm.description" 
-                                type="text" 
-                                class="ct-form-control" 
-                                placeholder="Enter tag description (optional)"
-                                maxlength="255"
-                            >
-                            <p class="text-xs text-gray-500 mt-1">{{ (tagForm.description || '').length }}/255 characters</p>
-                        </div>
-                        <div>
-                            <label class="ct-form-label">Color</label>
-                            <select v-model="tagForm.color" class="ct-form-select">
-                                <option value="">Select a color</option>
-                                <option value="parent">Parent</option>
-                                <option value="default">Default</option>
-                                <option value="accent">Accent</option>
-                                <option value="amber">Amber</option>
-                                <option value="basic">Basic</option>
-                                <option value="black">Black</option>
-                                <option value="blue">Blue</option>
-                                <option value="critical">Critical</option>
-                                <option value="constructive">Constructive</option>
-                                <option value="destructive">Destructive</option>
-                                <option value="cyan">Cyan</option>
-                                <option value="danger">Danger</option>
-                                <option value="emerald">Emerald</option>
-                                <option value="error">Error</option>
-                                <option value="fuchsia">Fuchsia</option>
-                                <option value="gray">Gray</option>
-                                <option value="green">Green</option>
-                                <option value="indigo">Indigo</option>
-                                <option value="info">Info</option>
-                                <option value="lime">Lime</option>
-                                <option value="magic">Magic</option>
-                                <option value="orange">Orange</option>
-                                <option value="pink">Pink</option>
-                                <option value="purple">Purple</option>
-                                <option value="red">Red</option>
-                                <option value="rose">Rose</option>
-                                <option value="sky">Sky</option>
-                                <option value="success">Success</option>
-                                <option value="teal">Teal</option>
-                                <option value="violet">Violet</option>
-                                <option value="warning">Warning</option>
-                                <option value="white">White</option>
-                                <option value="yellow">Yellow</option>
-                            </select>
-                        </div>
-                        <div v-if="tagError" class="ct-alert ct-alert-danger">{{ tagError }}</div>
-                        <div class="flex space-x-2">
-                            <button @click="saveTag" :disabled="isSaving" class="ct-btn ct-btn-primary">
-                                <span v-if="isSaving" class="spinner"></span>
-                                {{ editingTag ? 'Update' : 'Create' }}
-                            </button>
-                            <button @click="cancelEdit" class="ct-btn ct-btn-secondary">Cancel</button>
+                        <div class="ct-card-body space-y-4">
+                            <div>
+                                <label class="ct-form-label">Tag Name</label>
+                                <input 
+                                    v-model="tagForm.name" 
+                                    type="text" 
+                                    class="ct-form-control" 
+                                    placeholder="Enter tag name (1-100 characters)"
+                                    maxlength="100"
+                                >
+                                <p class="text-xs text-gray-500 mt-1">{{ tagForm.name.length }}/100 characters</p>
+                            </div>
+                            <div>
+                                <label class="ct-form-label">Description</label>
+                                <input 
+                                    v-model="tagForm.description" 
+                                    type="text" 
+                                    class="ct-form-control" 
+                                    placeholder="Enter tag description (optional)"
+                                    maxlength="255"
+                                >
+                                <p class="text-xs text-gray-500 mt-1">{{ (tagForm.description || '').length }}/255 characters</p>
+                            </div>
+                            <div>
+                                <label class="ct-form-label">Color</label>
+                                <select v-model="tagForm.color" class="ct-form-select">
+                                    <option value="">Select a color</option>
+                                    <option value="parent">Parent</option>
+                                    <option value="default">Default</option>
+                                    <option value="accent">Accent</option>
+                                    <option value="amber">🟡 Amber</option>
+                                    <option value="basic">Basic</option>
+                                    <option value="black">⚫ Black</option>
+                                    <option value="blue">🔵 Blue</option>
+                                    <option value="critical">🔴 Critical</option>
+                                    <option value="constructive">🟢 Constructive</option>
+                                    <option value="destructive">🔴 Destructive</option>
+                                    <option value="cyan">🩵 Cyan</option>
+                                    <option value="danger">🔴 Danger</option>
+                                    <option value="emerald">🟢 Emerald</option>
+                                    <option value="error">🔴 Error</option>
+                                    <option value="fuchsia">🩷 Fuchsia</option>
+                                    <option value="gray">⚫ Gray</option>
+                                    <option value="green">🟢 Green</option>
+                                    <option value="indigo">🟣 Indigo</option>
+                                    <option value="info">🔵 Info</option>
+                                    <option value="lime">🟢 Lime</option>
+                                    <option value="magic">✨ Magic</option>
+                                    <option value="orange">🟠 Orange</option>
+                                    <option value="pink">🩷 Pink</option>
+                                    <option value="purple">🟣 Purple</option>
+                                    <option value="red">🔴 Red</option>
+                                    <option value="rose">🌹 Rose</option>
+                                    <option value="sky">🩵 Sky</option>
+                                    <option value="success">🟢 Success</option>
+                                    <option value="teal">🟦 Teal</option>
+                                    <option value="violet">🟣 Violet</option>
+                                    <option value="warning">🟡 Warning</option>
+                                    <option value="white">⚪ White</option>
+                                    <option value="yellow">🟡 Yellow</option>
+                                </select>
+                            </div>
+                            <div v-if="tagError" class="ct-alert ct-alert-danger">{{ tagError }}</div>
+                            <div class="flex space-x-2">
+                                <button @click="saveTag" :disabled="isSaving" class="ct-btn ct-btn-primary">
+                                    <span v-if="isSaving" class="spinner"></span>
+                                    {{ editingTag ? 'Update' : 'Create' }}
+                                </button>
+                                <button @click="cancelEdit" class="ct-btn ct-btn-secondary">Cancel</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -452,6 +569,15 @@
                 </div>
             </div>
         </main>
+        
+        <!-- Toast Container -->
+        <div id="toast-container">
+            <div v-for="toast in toasts" :key="toast.id" :class="['ct-toast', `ct-toast-${toast.type}`, { 'slide-out': toast.removing }]">
+                <button @click="removeToast(toast.id)" class="ct-toast-close">&times;</button>
+                <div class="ct-toast-title">{{ toast.title }}</div>
+                <div class="ct-toast-message">{{ toast.message }}</div>
+            </div>
+        </div>
     </div>
 
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
@@ -476,11 +602,10 @@
                 const selectedTags = ref([]);
                 const prefixFilter = ref('');
                 const bulkColor = ref('');
-                const bulkError = ref('');
-                const bulkSuccess = ref('');
                 const isBulkOperating = ref(false);
                 const sortField = ref('name');
                 const sortDirection = ref('asc');
+                const toasts = ref([]);
                 
                 const loginForm = reactive({
                     baseUrl: 'https://testbernhard.church.tools',
@@ -522,6 +647,30 @@
                         }
                     });
                 });
+                
+                // Toast Functions
+                const showToast = (type, title, message, duration = 5000) => {
+                    const id = Date.now() + Math.random();
+                    const toast = { id, type, title, message, removing: false };
+                    toasts.value.push(toast);
+                    
+                    setTimeout(() => {
+                        removeToast(id);
+                    }, duration);
+                };
+                
+                const removeToast = (id) => {
+                    const toast = toasts.value.find(t => t.id === id);
+                    if (toast) {
+                        toast.removing = true;
+                        setTimeout(() => {
+                            const index = toasts.value.findIndex(t => t.id === id);
+                            if (index > -1) {
+                                toasts.value.splice(index, 1);
+                            }
+                        }, 300); // Match animation duration
+                    }
+                };
                 
                 // API Helper Functions
                 const apiRequest = async (endpoint, options = {}) => {
@@ -764,6 +913,10 @@
                             });
                         }
                         
+                        showToast('success', 
+                            editingTag.value ? 'Tag Updated' : 'Tag Created', 
+                            `Tag "${trimmedName}" was ${editingTag.value ? 'updated' : 'created'} successfully.`
+                        );
                         cancelEdit();
                         await loadTags();
                     } catch (error) {
@@ -808,10 +961,11 @@
                         await apiRequest(`/tags/${tag.id}?type=${selectedType.value}`, {
                             method: 'DELETE'
                         });
+                        showToast('success', 'Tag Deleted', `Tag "${tag.name}" was deleted successfully.`);
                         await loadTags();
                     } catch (error) {
                         console.error('Error deleting tag:', error);
-                        alert(`Failed to delete tag: ${error.message}`);
+                        showToast('error', 'Delete Failed', `Failed to delete tag: ${error.message}`);
                     }
                 };
                 
@@ -839,13 +993,11 @@
                 
                 const clearSelection = () => {
                     selectedTags.value = [];
-                    bulkError.value = '';
-                    bulkSuccess.value = '';
                 };
                 
                 const selectByPrefix = () => {
                     if (!prefixFilter.value.trim()) {
-                        bulkError.value = 'Please enter a prefix pattern (e.g., L:*)';
+                        showToast('warning', 'Missing Pattern', 'Please enter a prefix pattern (e.g., L:*)');
                         return;
                     }
                     
@@ -855,23 +1007,17 @@
                     );
                     
                     selectedTags.value = matchingTags.map(tag => tag.id);
-                    bulkSuccess.value = `Selected ${matchingTags.length} tags matching "${pattern}"`;
-                    bulkError.value = '';
-                    
-                    // Clear success message after 3 seconds
-                    setTimeout(() => {
-                        bulkSuccess.value = '';
-                    }, 3000);
+                    showToast('info', 'Tags Selected', `Selected ${matchingTags.length} tags matching "${pattern}"`);
                 };
                 
                 const applyBulkColor = async () => {
                     if (!bulkColor.value) {
-                        bulkError.value = 'Please select a color';
+                        showToast('warning', 'No Color Selected', 'Please select a color');
                         return;
                     }
                     
                     if (selectedTags.value.length === 0) {
-                        bulkError.value = 'Please select tags to update';
+                        showToast('warning', 'No Tags Selected', 'Please select tags to update');
                         return;
                     }
                     
@@ -880,8 +1026,6 @@
                     }
                     
                     isBulkOperating.value = true;
-                    bulkError.value = '';
-                    bulkSuccess.value = '';
                     
                     try {
                         const promises = selectedTags.value.map(tagId => {
@@ -903,15 +1047,10 @@
                         
                         await Promise.all(promises);
                         
-                        bulkSuccess.value = `Successfully updated ${selectedTags.value.length} tags to ${bulkColor.value}`;
+                        showToast('success', 'Bulk Update Complete', `Successfully updated ${selectedTags.value.length} tags to ${bulkColor.value}`);
                         selectedTags.value = [];
                         bulkColor.value = '';
                         await loadTags();
-                        
-                        // Clear success message after 5 seconds
-                        setTimeout(() => {
-                            bulkSuccess.value = '';
-                        }, 5000);
                         
                     } catch (error) {
                         console.error('Error applying bulk color:', error);
@@ -933,7 +1072,7 @@
                             }
                         }
                         
-                        bulkError.value = `Failed to update tags: ${errorMessage}`;
+                        showToast('error', 'Bulk Update Failed', `Failed to update tags: ${errorMessage}`);
                     } finally {
                         isBulkOperating.value = false;
                     }
@@ -941,7 +1080,7 @@
                 
                 const bulkDelete = async () => {
                     if (selectedTags.value.length === 0) {
-                        bulkError.value = 'Please select tags to delete';
+                        showToast('warning', 'No Tags Selected', 'Please select tags to delete');
                         return;
                     }
                     
@@ -955,8 +1094,6 @@
                     }
                     
                     isBulkOperating.value = true;
-                    bulkError.value = '';
-                    bulkSuccess.value = '';
                     
                     try {
                         const promises = selectedTags.value.map(tagId => 
@@ -967,18 +1104,13 @@
                         
                         await Promise.all(promises);
                         
-                        bulkSuccess.value = `Successfully deleted ${selectedTags.value.length} tags`;
+                        showToast('success', 'Bulk Delete Complete', `Successfully deleted ${selectedTags.value.length} tags`);
                         selectedTags.value = [];
                         await loadTags();
                         
-                        // Clear success message after 5 seconds
-                        setTimeout(() => {
-                            bulkSuccess.value = '';
-                        }, 5000);
-                        
                     } catch (error) {
                         console.error('Error bulk deleting tags:', error);
-                        bulkError.value = `Failed to delete tags: ${error.message}`;
+                        showToast('error', 'Bulk Delete Failed', `Failed to delete tags: ${error.message}`);
                     } finally {
                         isBulkOperating.value = false;
                     }
@@ -1021,9 +1153,8 @@
                     selectedTags,
                     prefixFilter,
                     bulkColor,
-                    bulkError,
-                    bulkSuccess,
                     isBulkOperating,
+                    toasts,
                     allSelected,
                     login,
                     logout,
@@ -1049,7 +1180,9 @@
                             sortField.value = field;
                             sortDirection.value = 'asc';
                         }
-                    }
+                    },
+                    showToast,
+                    removeToast
                 };
             }
         }).mount('#app');
