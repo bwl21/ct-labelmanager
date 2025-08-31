@@ -87,17 +87,39 @@
         .border-b { border-bottom-width: 1px; }
         .border-gray-200 { border-color: #e5e7eb; }
         
-        .ct-color-blue { background-color: #007cba; }
-        .ct-color-green { background-color: #28a745; }
-        .ct-color-red { background-color: #dc3545; }
-        .ct-color-yellow { background-color: #ffc107; }
-        .ct-color-orange { background-color: #fd7e14; }
-        .ct-color-purple { background-color: #6f42c1; }
-        .ct-color-pink { background-color: #e83e8c; }
-        .ct-color-teal { background-color: #20c997; }
-        .ct-color-cyan { background-color: #17a2b8; }
-        .ct-color-gray { background-color: #6c757d; }
-        .ct-color-dark { background-color: #343a40; }
+        .ct-color-parent { background-color: #6c757d; }
+        .ct-color-default { background-color: #6c757d; }
+        .ct-color-accent { background-color: #007cba; }
+        .ct-color-amber { background-color: #f59e0b; }
+        .ct-color-basic { background-color: #6b7280; }
+        .ct-color-black { background-color: #000000; }
+        .ct-color-blue { background-color: #3b82f6; }
+        .ct-color-critical { background-color: #dc2626; }
+        .ct-color-constructive { background-color: #16a34a; }
+        .ct-color-destructive { background-color: #dc2626; }
+        .ct-color-cyan { background-color: #06b6d4; }
+        .ct-color-danger { background-color: #dc2626; }
+        .ct-color-emerald { background-color: #10b981; }
+        .ct-color-error { background-color: #dc2626; }
+        .ct-color-fuchsia { background-color: #d946ef; }
+        .ct-color-gray { background-color: #6b7280; }
+        .ct-color-green { background-color: #16a34a; }
+        .ct-color-indigo { background-color: #6366f1; }
+        .ct-color-info { background-color: #3b82f6; }
+        .ct-color-lime { background-color: #84cc16; }
+        .ct-color-magic { background-color: #8b5cf6; }
+        .ct-color-orange { background-color: #f97316; }
+        .ct-color-pink { background-color: #ec4899; }
+        .ct-color-purple { background-color: #a855f7; }
+        .ct-color-red { background-color: #dc2626; }
+        .ct-color-rose { background-color: #f43f5e; }
+        .ct-color-sky { background-color: #0ea5e9; }
+        .ct-color-success { background-color: #16a34a; }
+        .ct-color-teal { background-color: #14b8a6; }
+        .ct-color-violet { background-color: #8b5cf6; }
+        .ct-color-warning { background-color: #f59e0b; }
+        .ct-color-white { background-color: #ffffff; border: 1px solid #d1d5db; }
+        .ct-color-yellow { background-color: #eab308; }
         
         .color-dot { display: inline-block; width: 20px; height: 20px; border-radius: 50%; border: 1px solid #ddd; }
         
@@ -225,17 +247,39 @@
                             <div class="flex items-center gap-2">
                                 <select v-model="bulkColor" class="ct-form-select" style="width: auto;">
                                     <option value="">Select Color</option>
+                                    <option value="parent">Parent</option>
+                                    <option value="default">Default</option>
+                                    <option value="accent">Accent</option>
+                                    <option value="amber">🟡 Amber</option>
+                                    <option value="basic">Basic</option>
+                                    <option value="black">⚫ Black</option>
                                     <option value="blue">🔵 Blue</option>
-                                    <option value="green">🟢 Green</option>
-                                    <option value="red">🔴 Red</option>
-                                    <option value="yellow">🟡 Yellow</option>
-                                    <option value="orange">🟠 Orange</option>
-                                    <option value="purple">🟣 Purple</option>
-                                    <option value="pink">🩷 Pink</option>
-                                    <option value="teal">🟦 Teal</option>
+                                    <option value="critical">🔴 Critical</option>
+                                    <option value="constructive">🟢 Constructive</option>
+                                    <option value="destructive">🔴 Destructive</option>
                                     <option value="cyan">🩵 Cyan</option>
+                                    <option value="danger">🔴 Danger</option>
+                                    <option value="emerald">🟢 Emerald</option>
+                                    <option value="error">🔴 Error</option>
+                                    <option value="fuchsia">🩷 Fuchsia</option>
                                     <option value="gray">⚫ Gray</option>
-                                    <option value="dark">⚫ Dark</option>
+                                    <option value="green">🟢 Green</option>
+                                    <option value="indigo">🟣 Indigo</option>
+                                    <option value="info">🔵 Info</option>
+                                    <option value="lime">🟢 Lime</option>
+                                    <option value="magic">✨ Magic</option>
+                                    <option value="orange">🟠 Orange</option>
+                                    <option value="pink">🩷 Pink</option>
+                                    <option value="purple">🟣 Purple</option>
+                                    <option value="red">🔴 Red</option>
+                                    <option value="rose">🌹 Rose</option>
+                                    <option value="sky">🩵 Sky</option>
+                                    <option value="success">🟢 Success</option>
+                                    <option value="teal">🟦 Teal</option>
+                                    <option value="violet">🟣 Violet</option>
+                                    <option value="warning">🟡 Warning</option>
+                                    <option value="white">⚪ White</option>
+                                    <option value="yellow">🟡 Yellow</option>
                                 </select>
                                 <button @click="applyBulkColor" :disabled="!bulkColor || isBulkOperating" class="ct-btn ct-btn-success ct-btn-sm">
                                     <span v-if="isBulkOperating" class="spinner"></span>
@@ -292,17 +336,39 @@
                             <label class="ct-form-label">Color</label>
                             <select v-model="tagForm.color" class="ct-form-select">
                                 <option value="">Select a color</option>
+                                <option value="parent">Parent</option>
+                                <option value="default">Default</option>
+                                <option value="accent">Accent</option>
+                                <option value="amber">Amber</option>
+                                <option value="basic">Basic</option>
+                                <option value="black">Black</option>
                                 <option value="blue">Blue</option>
-                                <option value="green">Green</option>
-                                <option value="red">Red</option>
-                                <option value="yellow">Yellow</option>
-                                <option value="orange">Orange</option>
-                                <option value="purple">Purple</option>
-                                <option value="pink">Pink</option>
-                                <option value="teal">Teal</option>
+                                <option value="critical">Critical</option>
+                                <option value="constructive">Constructive</option>
+                                <option value="destructive">Destructive</option>
                                 <option value="cyan">Cyan</option>
+                                <option value="danger">Danger</option>
+                                <option value="emerald">Emerald</option>
+                                <option value="error">Error</option>
+                                <option value="fuchsia">Fuchsia</option>
                                 <option value="gray">Gray</option>
-                                <option value="dark">Dark</option>
+                                <option value="green">Green</option>
+                                <option value="indigo">Indigo</option>
+                                <option value="info">Info</option>
+                                <option value="lime">Lime</option>
+                                <option value="magic">Magic</option>
+                                <option value="orange">Orange</option>
+                                <option value="pink">Pink</option>
+                                <option value="purple">Purple</option>
+                                <option value="red">Red</option>
+                                <option value="rose">Rose</option>
+                                <option value="sky">Sky</option>
+                                <option value="success">Success</option>
+                                <option value="teal">Teal</option>
+                                <option value="violet">Violet</option>
+                                <option value="warning">Warning</option>
+                                <option value="white">White</option>
+                                <option value="yellow">Yellow</option>
                             </select>
                         </div>
                         <div v-if="tagError" class="ct-alert ct-alert-danger">{{ tagError }}</div>
