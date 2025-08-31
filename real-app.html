@@ -694,8 +694,28 @@
                     const responseText = await response.text();
                     let data;
                     
+                    // Check for PHP warnings in response
+                    const hasPhpWarnings = responseText.includes('<b>Warning</b>') || responseText.includes('<b>Notice</b>');
+                    
                     try {
-                        data = JSON.parse(responseText);
+                        if (hasPhpWarnings) {
+                            // Extract JSON from response with PHP warnings
+                            const jsonMatch = responseText.match(/\{[\s\S]*\}$/);
+                            if (jsonMatch) {
+                                data = JSON.parse(jsonMatch[0]);
+                                // Log the warnings for debugging
+                                console.warn('ChurchTools PHP Warnings detected:', responseText.split('{')[0]);
+                                
+                                // Show a warning toast about backend issues
+                                if (response.ok && data.data) {
+                                    showToast('warning', 'Backend Warning', 'The operation completed successfully, but there were backend warnings. Please check the browser console for details.');
+                                }
+                            } else {
+                                throw new Error('Could not parse response with PHP warnings');
+                            }
+                        } else {
+                            data = JSON.parse(responseText);
+                        }
                     } catch (e) {
                         console.error('Invalid JSON response:', responseText);
                         throw new Error('Invalid response from server');
