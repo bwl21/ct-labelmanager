@@ -876,16 +876,31 @@
                     
                     if (!trimmedName) {
                         tagError.value = 'Tag name is required';
+                        showToast('warning', 'Missing Name', 'Tag name is required');
                         return;
                     }
                     
                     if (trimmedName.length > 100) {
                         tagError.value = 'Tag name must be between 1 and 100 characters';
+                        showToast('warning', 'Name Too Long', 'Tag name must be between 1 and 100 characters');
                         return;
                     }
                     
                     if (!tagForm.color) {
                         tagError.value = 'Tag color is required';
+                        showToast('warning', 'Missing Color', 'Tag color is required');
+                        return;
+                    }
+                    
+                    // Check for duplicate names (case-insensitive)
+                    const existingTag = tags.value.find(tag => 
+                        tag.name.toLowerCase() === trimmedName.toLowerCase() && 
+                        (!editingTag.value || tag.id !== editingTag.value.id)
+                    );
+                    
+                    if (existingTag) {
+                        tagError.value = `A tag with the name "${trimmedName}" already exists`;
+                        showToast('warning', 'Duplicate Name', `A tag with the name "${trimmedName}" already exists. Please choose a different name.`);
                         return;
                     }
                     
@@ -922,22 +937,54 @@
                     } catch (error) {
                         console.error('Error saving tag:', error);
                         
-                        // Parse validation errors from ChurchTools
-                        if (error.message.includes('validation')) {
+                        let errorMessage = error.message;
+                        let errorTitle = editingTag.value ? 'Update Failed' : 'Create Failed';
+                        
+                        // Handle duplicate entry errors
+                        if (error.message.includes('Duplicate entry') || error.message.includes('1062')) {
+                            errorTitle = 'Duplicate Tag';
+                            errorMessage = `A tag with the name "${tagForm.name.trim()}" already exists. Please choose a different name.`;
+                        }
+                        // Handle validation errors from ChurchTools
+                        else if (error.message.includes('validation')) {
                             try {
                                 const errorData = JSON.parse(error.message.split('HTTP 400: ')[1] || '{}');
                                 if (errorData.errors && errorData.errors.length > 0) {
                                     const fieldErrors = errorData.errors.map(err => `${err.fieldId}: ${err.message}`).join(', ');
-                                    tagError.value = `Validation error: ${fieldErrors}`;
+                                    errorMessage = `Validation error: ${fieldErrors}`;
                                 } else {
-                                    tagError.value = errorData.translatedMessage || error.message;
+                                    errorMessage = errorData.translatedMessage || error.message;
                                 }
                             } catch (parseError) {
-                                tagError.value = error.message;
+                                errorMessage = error.message;
                             }
-                        } else {
-                            tagError.value = error.message;
                         }
+                        // Handle server errors with HTML warnings
+                        else if (error.message.includes('<b>Warning</b>') || error.message.includes('server.error')) {
+                            try {
+                                // Extract JSON from HTML response
+                                const jsonMatch = error.message.match(/\{[\s\S]*\}$/);
+                                if (jsonMatch) {
+                                    const errorData = JSON.parse(jsonMatch[0]);
+                                    if (errorData.errors && errorData.errors.length > 0) {
+                                        const dbError = errorData.errors[0].message;
+                                        if (dbError.includes('Duplicate entry')) {
+                                            errorTitle = 'Duplicate Tag';
+                                            errorMessage = `A tag with the name "${tagForm.name.trim()}" already exists. Please choose a different name.`;
+                                        } else {
+                                            errorMessage = dbError;
+                                        }
+                                    } else {
+                                        errorMessage = errorData.translatedMessage || 'A server error occurred';
+                                    }
+                                }
+                            } catch (parseError) {
+                                errorMessage = 'A server error occurred. Please try again.';
+                            }
+                        }
+                        
+                        showToast('error', errorTitle, errorMessage);
+                        tagError.value = errorMessage;
                     } finally {
                         isSaving.value = false;
                     }
