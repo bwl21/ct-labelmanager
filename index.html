@@ -379,40 +379,9 @@
                             
                             <div class="flex items-center gap-2">
                                 <select v-model="bulkColor" class="ct-form-select" style="width: auto;">
-                                    <option value="">Select Color</option>
-                                    <option value="parent">Parent</option>
-                                    <option value="default">Default</option>
-                                    <option value="accent">Accent</option>
-                                    <option value="amber">🟡 Amber</option>
-                                    <option value="basic">Basic</option>
-                                    <option value="black">⚫ Black</option>
-                                    <option value="blue">🔵 Blue</option>
-                                    <option value="critical">🔴 Critical</option>
-                                    <option value="constructive">🟢 Constructive</option>
-                                    <option value="destructive">🔴 Destructive</option>
-                                    <option value="cyan">🩵 Cyan</option>
-                                    <option value="danger">🔴 Danger</option>
-                                    <option value="emerald">🟢 Emerald</option>
-                                    <option value="error">🔴 Error</option>
-                                    <option value="fuchsia">🩷 Fuchsia</option>
-                                    <option value="gray">⚫ Gray</option>
-                                    <option value="green">🟢 Green</option>
-                                    <option value="indigo">🟣 Indigo</option>
-                                    <option value="info">🔵 Info</option>
-                                    <option value="lime">🟢 Lime</option>
-                                    <option value="magic">✨ Magic</option>
-                                    <option value="orange">🟠 Orange</option>
-                                    <option value="pink">🩷 Pink</option>
-                                    <option value="purple">🟣 Purple</option>
-                                    <option value="red">🔴 Red</option>
-                                    <option value="rose">🌹 Rose</option>
-                                    <option value="sky">🩵 Sky</option>
-                                    <option value="success">🟢 Success</option>
-                                    <option value="teal">🟦 Teal</option>
-                                    <option value="violet">🟣 Violet</option>
-                                    <option value="warning">🟡 Warning</option>
-                                    <option value="white">⚪ White</option>
-                                    <option value="yellow">🟡 Yellow</option>
+                                    <option v-for="color in colorOptions" :key="color.value" :value="color.value">
+                                        {{ color.emoji }} {{ color.label }} {{ color.hex ? `(${color.hex})` : '' }}
+                                    </option>
                                 </select>
                                 <button @click="applyBulkColor" :disabled="!bulkColor || isBulkOperating" class="ct-btn ct-btn-success ct-btn-sm">
                                     <span v-if="isBulkOperating" class="spinner"></span>
@@ -471,40 +440,9 @@
                             <div>
                                 <label class="ct-form-label">Color</label>
                                 <select v-model="tagForm.color" class="ct-form-select">
-                                    <option value="">Select a color</option>
-                                    <option value="parent">Parent</option>
-                                    <option value="default">Default</option>
-                                    <option value="accent">Accent</option>
-                                    <option value="amber">🟡 Amber</option>
-                                    <option value="basic">Basic</option>
-                                    <option value="black">⚫ Black</option>
-                                    <option value="blue">🔵 Blue</option>
-                                    <option value="critical">🔴 Critical</option>
-                                    <option value="constructive">🟢 Constructive</option>
-                                    <option value="destructive">🔴 Destructive</option>
-                                    <option value="cyan">🩵 Cyan</option>
-                                    <option value="danger">🔴 Danger</option>
-                                    <option value="emerald">🟢 Emerald</option>
-                                    <option value="error">🔴 Error</option>
-                                    <option value="fuchsia">🩷 Fuchsia</option>
-                                    <option value="gray">⚫ Gray</option>
-                                    <option value="green">🟢 Green</option>
-                                    <option value="indigo">🟣 Indigo</option>
-                                    <option value="info">🔵 Info</option>
-                                    <option value="lime">🟢 Lime</option>
-                                    <option value="magic">✨ Magic</option>
-                                    <option value="orange">🟠 Orange</option>
-                                    <option value="pink">🩷 Pink</option>
-                                    <option value="purple">🟣 Purple</option>
-                                    <option value="red">🔴 Red</option>
-                                    <option value="rose">🌹 Rose</option>
-                                    <option value="sky">🩵 Sky</option>
-                                    <option value="success">🟢 Success</option>
-                                    <option value="teal">🟦 Teal</option>
-                                    <option value="violet">🟣 Violet</option>
-                                    <option value="warning">🟡 Warning</option>
-                                    <option value="white">⚪ White</option>
-                                    <option value="yellow">🟡 Yellow</option>
+                                    <option v-for="color in colorOptions" :key="color.value" :value="color.value">
+                                        {{ color.emoji }} {{ color.label }} {{ color.hex ? `(${color.hex})` : '' }}
+                                    </option>
                                 </select>
                             </div>
                             <div v-if="tagError" class="ct-alert ct-alert-danger">{{ tagError }}</div>
@@ -569,14 +507,20 @@
                                     <td class="font-semibold">{{ tag.name }}</td>
                                     <td class="text-sm text-gray-600">{{ tag.description || '-' }}</td>
                                     <td>
-                                        <div v-if="tag.color" class="flex items-center gap-2">
+                                        <div v-if="tag.color" class="flex items-center gap-3">
                                             <span :class="`color-dot ct-color-${tag.color}`" :title="`${getColorInfo(tag.color).name} (${getColorInfo(tag.color).hex})`"></span>
-                                            <div class="text-xs">
-                                                <div class="font-medium">{{ getColorInfo(tag.color).name }}</div>
-                                                <div class="text-gray-500">{{ getColorInfo(tag.color).hex }}</div>
+                                            <div>
+                                                <div class="font-medium text-sm">{{ getColorInfo(tag.color).name }}</div>
+                                                <div class="text-xs text-gray-500">{{ getColorInfo(tag.color).hex }}</div>
                                             </div>
                                         </div>
-                                        <span v-else class="text-gray-400">No color</span>
+                                        <div v-else class="flex items-center gap-3">
+                                            <span class="color-dot" style="background-color: #f3f4f6; border-color: #d1d5db;"></span>
+                                            <div>
+                                                <div class="font-medium text-sm text-gray-400">No color</div>
+                                                <div class="text-xs text-gray-400">-</div>
+                                            </div>
+                                        </div>
                                     </td>
                                     <td>
                                         <button @click="editTag(tag)" class="ct-btn ct-btn-outline-primary ct-btn-sm mr-2">Edit</button>
@@ -672,6 +616,46 @@
                             return bVal.localeCompare(aVal);
                         }
                     });
+                });
+                
+                // Computed property for color options
+                const colorOptions = computed(() => {
+                    return [
+                        { value: '', label: 'Select a color', emoji: '', hex: '' },
+                        { value: 'parent', label: 'Parent', emoji: '⚪', hex: '#6b7280' },
+                        { value: 'default', label: 'Default', emoji: '⚪', hex: '#6b7280' },
+                        { value: 'accent', label: 'Accent', emoji: '🔵', hex: '#007cba' },
+                        { value: 'amber', label: 'Amber', emoji: '🟡', hex: '#f59e0b' },
+                        { value: 'basic', label: 'Basic', emoji: '⚪', hex: '#6b7280' },
+                        { value: 'black', label: 'Black', emoji: '⚫', hex: '#000000' },
+                        { value: 'blue', label: 'Blue', emoji: '🔵', hex: '#3b82f6' },
+                        { value: 'critical', label: 'Critical', emoji: '🔴', hex: '#dc2626' },
+                        { value: 'constructive', label: 'Constructive', emoji: '🟢', hex: '#16a34a' },
+                        { value: 'destructive', label: 'Destructive', emoji: '🔴', hex: '#dc2626' },
+                        { value: 'cyan', label: 'Cyan', emoji: '🩵', hex: '#06b6d4' },
+                        { value: 'danger', label: 'Danger', emoji: '🔴', hex: '#dc2626' },
+                        { value: 'emerald', label: 'Emerald', emoji: '🟢', hex: '#10b981' },
+                        { value: 'error', label: 'Error', emoji: '🔴', hex: '#dc2626' },
+                        { value: 'fuchsia', label: 'Fuchsia', emoji: '🩷', hex: '#d946ef' },
+                        { value: 'gray', label: 'Gray', emoji: '⚫', hex: '#6b7280' },
+                        { value: 'green', label: 'Green', emoji: '🟢', hex: '#16a34a' },
+                        { value: 'indigo', label: 'Indigo', emoji: '🟣', hex: '#6366f1' },
+                        { value: 'info', label: 'Info', emoji: '🔵', hex: '#3b82f6' },
+                        { value: 'lime', label: 'Lime', emoji: '🟢', hex: '#84cc16' },
+                        { value: 'magic', label: 'Magic', emoji: '✨', hex: '#8b5cf6' },
+                        { value: 'orange', label: 'Orange', emoji: '🟠', hex: '#f97316' },
+                        { value: 'pink', label: 'Pink', emoji: '🩷', hex: '#ec4899' },
+                        { value: 'purple', label: 'Purple', emoji: '🟣', hex: '#a855f7' },
+                        { value: 'red', label: 'Red', emoji: '🔴', hex: '#dc2626' },
+                        { value: 'rose', label: 'Rose', emoji: '🌹', hex: '#f43f5e' },
+                        { value: 'sky', label: 'Sky', emoji: '🩵', hex: '#0ea5e9' },
+                        { value: 'success', label: 'Success', emoji: '🟢', hex: '#16a34a' },
+                        { value: 'teal', label: 'Teal', emoji: '🟦', hex: '#14b8a6' },
+                        { value: 'violet', label: 'Violet', emoji: '🟣', hex: '#8b5cf6' },
+                        { value: 'warning', label: 'Warning', emoji: '🟡', hex: '#f59e0b' },
+                        { value: 'white', label: 'White', emoji: '⚪', hex: '#ffffff' },
+                        { value: 'yellow', label: 'Yellow', emoji: '🟡', hex: '#eab308' }
+                    ];
                 });
                 
                 // Toast Functions
@@ -1322,6 +1306,7 @@
                     bulkDelete,
                     getDisplayName,
                     getColorInfo,
+                    colorOptions,
                     sortedTags,
                     sortField,
                     sortDirection,
