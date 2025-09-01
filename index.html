@@ -1461,10 +1461,13 @@ tin<!DOCTYPE html>
                         };
                         
                         if (editingTag.value) {
-                            // Update existing tag
-                            await apiRequest(`/tags/${selectedType.value}/${editingTag.value.id}`, {
-                                method: 'POST',
-                                body: JSON.stringify(tagData)
+                            // Update existing tag using PUT method - try without domain in URL
+                            await apiRequest(`/tags/${editingTag.value.id}`, {
+                                method: 'PUT',
+                                body: JSON.stringify({
+                                    ...tagData,
+                                    domainType: selectedType.value
+                                })
                             });
                         } else {
                             // Create new tag
@@ -1628,12 +1631,13 @@ tin<!DOCTYPE html>
                                 throw new Error(`Tag with ID ${tagId} not found`);
                             }
                             
-                            return apiRequest(`/tags/${selectedType.value}/${tagId}`, {
-                                method: 'POST',
+                            return apiRequest(`/tags/${tagId}`, {
+                                method: 'PUT',
                                 body: JSON.stringify({ 
                                     name: tag.name, // Include existing name
                                     description: tag.description || '', // Include existing description
-                                    color: bulkColor.value 
+                                    color: bulkColor.value,
+                                    domainType: selectedType.value
                                 })
                             });
                         });
