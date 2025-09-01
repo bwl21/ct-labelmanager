@@ -335,6 +335,157 @@ tin<!DOCTYPE html>
             background-position: 0 0, 0 2px, 2px -2px, -2px 0px;
         }
         
+        /* Color Picker Modal Styles */
+        .color-picker-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1100;
+            animation: modalFadeIn 0.2s ease-out;
+        }
+        
+        .color-picker-content {
+            background: white;
+            border-radius: var(--ct-border-radius);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            max-width: 700px;
+            width: 95%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: modalSlideIn 0.2s ease-out;
+        }
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes modalSlideIn {
+            from { 
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .color-picker-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .color-picker-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .color-picker-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 0.25rem;
+            transition: all 0.15s ease;
+        }
+        
+        .color-picker-close:hover {
+            background-color: #f3f4f6;
+            color: #374151;
+        }
+        
+        .color-picker-body {
+            padding: 1.5rem;
+        }
+        
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .color-option {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: var(--ct-border-radius);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            background-color: white;
+        }
+        
+        .color-option:hover {
+            border-color: var(--ct-primary);
+            box-shadow: 0 2px 8px rgba(0, 124, 186, 0.1);
+        }
+        
+        .color-option.selected {
+            border-color: var(--ct-primary);
+            background-color: #eff6ff;
+            box-shadow: 0 2px 8px rgba(0, 124, 186, 0.2);
+        }
+        
+        .color-option-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid #e5e7eb;
+            flex-shrink: 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .color-option-circle.empty {
+            background-color: #f9fafb;
+            border: 2px dashed #d1d5db;
+            box-shadow: none;
+        }
+        
+        .color-option-circle.white {
+            border: 2px solid #d1d5db;
+            background-color: #ffffff;
+        }
+        
+        .color-option-info {
+            flex: 1;
+        }
+        
+        .color-option-name {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.25rem;
+        }
+        
+        .color-option-hex {
+            font-size: 0.875rem;
+            color: #6b7280;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        }
+        
+        .color-picker-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            background-color: #f9fafb;
+        }
+        
         .hidden { display: none; }
         .overflow-x-auto { overflow-x: auto; }
         .w-12 { width: 3rem; }
@@ -378,8 +529,18 @@ tin<!DOCTYPE html>
             background: white;
             border-radius: var(--ct-border-radius);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            max-width: 500px;
-            width: 90%;
+            max-width: 600px;
+            width: 95%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-content-large {
+            background: white;
+            border-radius: var(--ct-border-radius);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            max-width: 800px;
+            width: 95%;
             max-height: 90vh;
             overflow-y: auto;
         }
@@ -675,50 +836,26 @@ tin<!DOCTYPE html>
                             </div>
                             <div>
                                 <label class="ct-form-label">Color</label>
-                                <div class="color-dropdown" :class="{ open: showTagColorDropdown }" @click.stop>
-                                    <button 
-                                        @click="toggleTagColorDropdown" 
-                                        class="color-dropdown-button"
-                                        type="button"
-                                    >
-                                        <div class="color-dropdown-content">
-                                            <span 
-                                                v-if="tagForm.color"
-                                                class="color-dropdown-circle" 
-                                                :class="{ white: tagForm.color === 'white' }"
-                                                :style="{ backgroundColor: getColorInfo(tagForm.color).hex }"
-                                            ></span>
-                                            <span v-else class="color-dropdown-circle empty"></span>
-                                            <div class="color-dropdown-info">
-                                                <span class="color-dropdown-name">{{ tagForm.color ? getColorInfo(tagForm.color).name : 'Select a color' }}</span>
-                                                <span v-if="tagForm.color" class="color-dropdown-hex">{{ getColorInfo(tagForm.color).hex }}</span>
-                                            </div>
-                                        </div>
-                                        <span class="color-dropdown-arrow">▼</span>
-                                    </button>
-                                    
-                                    <div v-if="showTagColorDropdown" class="color-dropdown-menu">
-                                        <div 
-                                            v-for="color in colorOptions" 
-                                            :key="color.value"
-                                            @click="selectTagColor(color.value)"
-                                            class="color-dropdown-item"
-                                            :class="{ selected: tagForm.color === color.value }"
-                                        >
-                                            <span 
-                                                v-if="color.hex" 
-                                                class="color-dropdown-circle" 
-                                                :class="{ white: color.value === 'white' }"
-                                                :style="{ backgroundColor: color.hex }"
-                                            ></span>
-                                            <span v-else class="color-dropdown-circle empty"></span>
-                                            <div class="color-dropdown-item-info">
-                                                <span class="color-dropdown-item-name">{{ color.label }}</span>
-                                                <span v-if="color.hex" class="color-dropdown-item-hex">{{ color.hex }}</span>
-                                            </div>
+                                <button 
+                                    @click="openColorPicker('tag')" 
+                                    class="color-dropdown-button"
+                                    type="button"
+                                >
+                                    <div class="color-dropdown-content">
+                                        <span 
+                                            v-if="tagForm.color"
+                                            class="color-dropdown-circle" 
+                                            :class="{ white: tagForm.color === 'white' }"
+                                            :style="{ backgroundColor: getColorInfo(tagForm.color).hex }"
+                                        ></span>
+                                        <span v-else class="color-dropdown-circle empty"></span>
+                                        <div class="color-dropdown-info">
+                                            <span class="color-dropdown-name">{{ tagForm.color ? getColorInfo(tagForm.color).name : 'Select a color' }}</span>
+                                            <span v-if="tagForm.color" class="color-dropdown-hex">{{ getColorInfo(tagForm.color).hex }}</span>
                                         </div>
                                     </div>
-                                </div>
+                                    <span class="color-dropdown-arrow">🎨</span>
+                                </button>
                             </div>
                             <div v-if="tagError" class="ct-alert ct-alert-danger">{{ tagError }}</div>
                             <div class="flex space-x-2">
@@ -823,6 +960,56 @@ tin<!DOCTYPE html>
                 <div class="ct-toast-message">{{ toast.message }}</div>
             </div>
         </div>
+        
+        <!-- Color Picker Modal -->
+        <div v-if="showColorPicker" class="color-picker-modal" @click.self="closeColorPicker">
+            <div class="color-picker-content">
+                <div class="color-picker-header">
+                    <h3 class="color-picker-title">Choose a Color</h3>
+                    <button @click="closeColorPicker" class="color-picker-close">&times;</button>
+                </div>
+                
+                <div class="color-picker-body">
+                    <div class="color-grid">
+                        <div 
+                            v-for="color in colorOptions.filter(c => c.value !== '')" 
+                            :key="color.value"
+                            @click="selectColorInPicker(color.value)"
+                            class="color-option"
+                            :class="{ selected: selectedColorInPicker === color.value }"
+                        >
+                            <span 
+                                class="color-option-circle" 
+                                :class="{ white: color.value === 'white' }"
+                                :style="{ backgroundColor: color.hex }"
+                            ></span>
+                            <div class="color-option-info">
+                                <div class="color-option-name">{{ color.label }}</div>
+                                <div class="color-option-hex">{{ color.hex }}</div>
+                            </div>
+                        </div>
+                        
+                        <!-- No Color Option -->
+                        <div 
+                            @click="selectColorInPicker('')"
+                            class="color-option"
+                            :class="{ selected: selectedColorInPicker === '' }"
+                        >
+                            <span class="color-option-circle empty"></span>
+                            <div class="color-option-info">
+                                <div class="color-option-name">No Color</div>
+                                <div class="color-option-hex">Remove color</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="color-picker-footer">
+                    <button @click="closeColorPicker" class="ct-btn ct-btn-secondary">Cancel</button>
+                    <button @click="confirmColorSelection" class="ct-btn ct-btn-primary">Select Color</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
@@ -850,6 +1037,9 @@ tin<!DOCTYPE html>
                 const isBulkOperating = ref(false);
                 const showBulkColorDropdown = ref(false);
                 const showTagColorDropdown = ref(false);
+                const showColorPicker = ref(false);
+                const colorPickerTarget = ref(''); // 'bulk' or 'tag'
+                const selectedColorInPicker = ref('');
                 const sortField = ref('name');
                 const sortDirection = ref('asc');
                 const toasts = ref([]);
@@ -1553,6 +1743,37 @@ tin<!DOCTYPE html>
                     showTagColorDropdown.value = false;
                 };
                 
+                // Color picker modal functions
+                const openColorPicker = (target) => {
+                    colorPickerTarget.value = target;
+                    if (target === 'bulk') {
+                        selectedColorInPicker.value = bulkColor.value;
+                    } else if (target === 'tag') {
+                        selectedColorInPicker.value = tagForm.color;
+                    }
+                    showColorPicker.value = true;
+                    closeBothDropdowns();
+                };
+                
+                const closeColorPicker = () => {
+                    showColorPicker.value = false;
+                    selectedColorInPicker.value = '';
+                    colorPickerTarget.value = '';
+                };
+                
+                const selectColorInPicker = (colorValue) => {
+                    selectedColorInPicker.value = colorValue;
+                };
+                
+                const confirmColorSelection = () => {
+                    if (colorPickerTarget.value === 'bulk') {
+                        bulkColor.value = selectedColorInPicker.value;
+                    } else if (colorPickerTarget.value === 'tag') {
+                        tagForm.color = selectedColorInPicker.value;
+                    }
+                    closeColorPicker();
+                };
+                
                 // Add click outside listener to close dropdowns
                 onMounted(() => {
                     document.addEventListener('click', closeBothDropdowns);
@@ -1598,11 +1819,18 @@ tin<!DOCTYPE html>
                     isBulkOperating,
                     showBulkColorDropdown,
                     showTagColorDropdown,
+                    showColorPicker,
+                    colorPickerTarget,
+                    selectedColorInPicker,
                     selectBulkColor,
                     selectTagColor,
                     toggleBulkColorDropdown,
                     toggleTagColorDropdown,
                     closeBothDropdowns,
+                    openColorPicker,
+                    closeColorPicker,
+                    selectColorInPicker,
+                    confirmColorSelection,
                     toasts,
                     allSelected,
                     login,
