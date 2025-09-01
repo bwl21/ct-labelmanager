@@ -142,38 +142,66 @@ tin<!DOCTYPE html>
         .color-dropdown {
             position: relative;
             display: inline-block;
+            width: 100%;
         }
         
         .color-dropdown-button {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 0.5rem 0.75rem;
-            border: 1px solid #ced4da;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
             border-radius: var(--ct-border-radius);
             background-color: white;
             cursor: pointer;
-            min-width: 200px;
             font-size: 0.875rem;
-            transition: all 0.2s ease;
+            transition: all 0.15s ease;
             width: 100%;
-            justify-content: space-between;
+            min-height: 42px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
         
         .color-dropdown-button:hover {
             border-color: var(--ct-primary);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
         
         .color-dropdown-button:focus {
             outline: none;
             border-color: var(--ct-primary);
-            box-shadow: 0 0 0 2px rgba(0, 124, 186, 0.25);
+            box-shadow: 0 0 0 3px rgba(0, 124, 186, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .color-dropdown-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+        
+        .color-dropdown-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
+        }
+        
+        .color-dropdown-name {
+            font-weight: 500;
+            color: #374151;
+            line-height: 1.2;
+        }
+        
+        .color-dropdown-hex {
+            font-size: 0.75rem;
+            color: #6b7280;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
         }
         
         .color-dropdown-arrow {
             font-size: 0.75rem;
-            color: #6b7280;
-            transition: transform 0.2s ease;
+            color: #9ca3af;
+            transition: transform 0.15s ease;
+            margin-left: 8px;
         }
         
         .color-dropdown.open .color-dropdown-arrow {
@@ -182,50 +210,129 @@ tin<!DOCTYPE html>
         
         .color-dropdown-menu {
             position: absolute;
-            top: 100%;
+            top: calc(100% + 4px);
             left: 0;
             right: 0;
             background-color: white;
-            border: 1px solid #ced4da;
-            border-radius: 0.25rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #d1d5db;
+            border-radius: var(--ct-border-radius);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
             z-index: 1000;
-            max-height: 300px;
+            max-height: 280px;
             overflow-y: auto;
+            animation: dropdownFadeIn 0.15s ease-out;
+            margin-top: 2px;
+        }
+        
+        @keyframes dropdownFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .color-dropdown-item {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 0.5rem 0.75rem;
+            gap: 12px;
+            padding: 0.75rem 1rem;
             cursor: pointer;
             font-size: 0.875rem;
+            transition: background-color 0.1s ease;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        
+        .color-dropdown-item:last-child {
+            border-bottom: none;
         }
         
         .color-dropdown-item:hover {
-            background-color: #f8f9fa;
+            background-color: #f8fafc;
         }
         
         .color-dropdown-item.selected {
-            background-color: #e3f2fd;
+            background-color: #eff6ff;
+            border-left: 3px solid var(--ct-primary);
+            padding-left: calc(1rem - 3px);
+        }
+        
+        .color-dropdown-item-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
+            flex: 1;
+        }
+        
+        .color-dropdown-item-name {
+            font-weight: 500;
+            color: #374151;
+            line-height: 1.2;
+        }
+        
+        .color-dropdown-item-hex {
+            font-size: 0.75rem;
+            color: #6b7280;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
         }
         
         .color-dropdown-circle {
-            width: 16px;
-            height: 16px;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
-            border: 1px solid #e5e7eb;
+            border: 2px solid #e5e7eb;
             flex-shrink: 0;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
         
         .color-dropdown-circle.empty {
-            background-color: #f3f4f6;
+            background-color: #f9fafb;
             border: 2px dashed #d1d5db;
+            box-shadow: none;
         }
         
         .color-dropdown-circle.white {
             border: 2px solid #d1d5db;
+            background-color: #ffffff;
+        }
+        
+        /* Custom scrollbar for dropdown */
+        .color-dropdown-menu::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .color-dropdown-menu::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 3px;
+        }
+        
+        .color-dropdown-menu::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        
+        .color-dropdown-menu::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        /* Improve focus states */
+        .color-dropdown-item:focus {
+            outline: none;
+            background-color: #f1f5f9;
+        }
+        
+        /* Better empty state styling */
+        .color-dropdown-item:first-child .color-dropdown-circle.empty {
+            background: linear-gradient(45deg, #f9fafb 25%, transparent 25%), 
+                        linear-gradient(-45deg, #f9fafb 25%, transparent 25%), 
+                        linear-gradient(45deg, transparent 75%, #f9fafb 75%), 
+                        linear-gradient(-45deg, transparent 75%, #f9fafb 75%);
+            background-size: 4px 4px;
+            background-position: 0 0, 0 2px, 2px -2px, -2px 0px;
         }
         
         .hidden { display: none; }
@@ -474,7 +581,7 @@ tin<!DOCTYPE html>
                                         class="color-dropdown-button"
                                         type="button"
                                     >
-                                        <div class="flex items-center gap-2">
+                                        <div class="color-dropdown-content">
                                             <span 
                                                 v-if="bulkColor"
                                                 class="color-dropdown-circle" 
@@ -482,9 +589,9 @@ tin<!DOCTYPE html>
                                                 :style="{ backgroundColor: getColorInfo(bulkColor).hex }"
                                             ></span>
                                             <span v-else class="color-dropdown-circle empty"></span>
-                                            <div class="flex flex-col items-start">
-                                                <span>{{ bulkColor ? getColorInfo(bulkColor).name : 'Select Color' }}</span>
-                                                <span v-if="bulkColor" class="text-gray-500 text-xs">{{ getColorInfo(bulkColor).hex }}</span>
+                                            <div class="color-dropdown-info">
+                                                <span class="color-dropdown-name">{{ bulkColor ? getColorInfo(bulkColor).name : 'Select Color' }}</span>
+                                                <span v-if="bulkColor" class="color-dropdown-hex">{{ getColorInfo(bulkColor).hex }}</span>
                                             </div>
                                         </div>
                                         <span class="color-dropdown-arrow">▼</span>
@@ -505,8 +612,10 @@ tin<!DOCTYPE html>
                                                 :style="{ backgroundColor: color.hex }"
                                             ></span>
                                             <span v-else class="color-dropdown-circle empty"></span>
-                                            <span>{{ color.label }}</span>
-                                            <span v-if="color.hex" class="text-gray-500 text-xs ml-auto">({{ color.hex }})</span>
+                                            <div class="color-dropdown-item-info">
+                                                <span class="color-dropdown-item-name">{{ color.label }}</span>
+                                                <span v-if="color.hex" class="color-dropdown-item-hex">{{ color.hex }}</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -572,7 +681,7 @@ tin<!DOCTYPE html>
                                         class="color-dropdown-button"
                                         type="button"
                                     >
-                                        <div class="flex items-center gap-2">
+                                        <div class="color-dropdown-content">
                                             <span 
                                                 v-if="tagForm.color"
                                                 class="color-dropdown-circle" 
@@ -580,9 +689,9 @@ tin<!DOCTYPE html>
                                                 :style="{ backgroundColor: getColorInfo(tagForm.color).hex }"
                                             ></span>
                                             <span v-else class="color-dropdown-circle empty"></span>
-                                            <div class="flex flex-col items-start">
-                                                <span>{{ tagForm.color ? getColorInfo(tagForm.color).name : 'Select a color' }}</span>
-                                                <span v-if="tagForm.color" class="text-gray-500 text-xs">{{ getColorInfo(tagForm.color).hex }}</span>
+                                            <div class="color-dropdown-info">
+                                                <span class="color-dropdown-name">{{ tagForm.color ? getColorInfo(tagForm.color).name : 'Select a color' }}</span>
+                                                <span v-if="tagForm.color" class="color-dropdown-hex">{{ getColorInfo(tagForm.color).hex }}</span>
                                             </div>
                                         </div>
                                         <span class="color-dropdown-arrow">▼</span>
@@ -603,8 +712,10 @@ tin<!DOCTYPE html>
                                                 :style="{ backgroundColor: color.hex }"
                                             ></span>
                                             <span v-else class="color-dropdown-circle empty"></span>
-                                            <span>{{ color.label }}</span>
-                                            <span v-if="color.hex" class="text-gray-500 text-xs ml-auto">({{ color.hex }})</span>
+                                            <div class="color-dropdown-item-info">
+                                                <span class="color-dropdown-item-name">{{ color.label }}</span>
+                                                <span v-if="color.hex" class="color-dropdown-item-hex">{{ color.hex }}</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
