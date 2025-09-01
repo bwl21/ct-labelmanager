@@ -1,0 +1,56 @@
+{
+  "name": "churchtools-label-manager",
+  "version": "2.0.0",
+  "description": "Advanced tag management interface for ChurchTools with enhanced UI, bulk operations, and comprehensive tag management capabilities",
+  "main": "index.html",
+  "scripts": {
+    "build": "npm run clean && npm run package",
+    "package": "npm run package:zip && npm run package:info",
+    "package:zip": "zip -r ct-labelmanager-v$npm_package_version.zip index.html module.json README.md DEPLOYMENT.md",
+    "package:info": "npm run package:size && npm run package:contents",
+    "package:size": "ls -lh ct-labelmanager-v$npm_package_version.zip | awk '{print \"Package size: \" $5}'",
+    "package:contents": "echo '\\nPackage contents:' && unzip -l ct-labelmanager-v$npm_package_version.zip",
+    "clean": "rm -f ct-labelmanager-v*.zip",
+    "validate": "npm run validate:module && npm run validate:html",
+    "validate:module": "node -e \"const m=require('./module.json'); console.log('✅ module.json valid:', m.name, 'v' + m.version)\"",
+    "validate:html": "test -f index.html && echo '✅ index.html exists' || echo '❌ index.html missing'",
+    "dev": "python3 -m http.server 8080",
+    "dev:open": "npm run dev & sleep 2 && open http://localhost:8080",
+    "release": "npm run validate && npm run build && npm run release:info",
+    "release:info": "echo '\\n🚀 Release ready: ct-labelmanager-v'$npm_package_version'.zip'",
+    "version:patch": "npm version patch --no-git-tag-version && npm run update:module-version",
+    "version:minor": "npm version minor --no-git-tag-version && npm run update:module-version",
+    "version:major": "npm version major --no-git-tag-version && npm run update:module-version",
+    "update:module-version": "node -e \"const fs=require('fs'); const pkg=require('./package.json'); const mod=require('./module.json'); mod.version=pkg.version; fs.writeFileSync('module.json', JSON.stringify(mod, null, 2))\"",
+    "test": "npm run validate",
+    "start": "npm run dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/your-username/churchtools-label-manager.git"
+  },
+  "keywords": [
+    "churchtools",
+    "label-manager",
+    "tags",
+    "vue",
+    "custom-module"
+  ],
+  "author": "ChurchTools Community",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/your-username/churchtools-label-manager/issues"
+  },
+  "homepage": "https://github.com/your-username/churchtools-label-manager#readme",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "devDependencies": {},
+  "dependencies": {},
+  "files": [
+    "index.html",
+    "module.json",
+    "README.md",
+    "DEPLOYMENT.md"
+  ]
+}
