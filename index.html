@@ -643,6 +643,46 @@
             animation: slideOutRight 0.3s ease-in forwards;
         }
     </style>
+    
+    <!-- CSP-compatible CSS fallback -->
+    <script>
+        // Check if CSS is loaded, if not, inject it programmatically
+        function ensureCSSLoaded() {
+            // Test if CSS variables are working
+            const testElement = document.createElement('div');
+            testElement.style.cssText = 'color: var(--ct-primary); position: absolute; visibility: hidden;';
+            document.body.appendChild(testElement);
+            
+            const computedColor = window.getComputedStyle(testElement).color;
+            document.body.removeChild(testElement);
+            
+            // If CSS variables aren't working, inject CSS programmatically
+            if (computedColor === 'var(--ct-primary)' || computedColor === '') {
+                console.log('CSS not loaded, injecting programmatically for embedded mode...');
+                injectCSS();
+            }
+        }
+        
+        function injectCSS() {
+            const style = document.createElement('style');
+            style.type = 'text/css';
+            
+            // Get the CSS content from the existing style tag
+            const existingStyle = document.querySelector('style');
+            if (existingStyle) {
+                style.textContent = existingStyle.textContent;
+                document.head.appendChild(style);
+                console.log('CSS injected programmatically');
+            }
+        }
+        
+        // Run CSS check after DOM is loaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', ensureCSSLoaded);
+        } else {
+            ensureCSSLoaded();
+        }
+    </script>
 </head>
 <body>
     <div id="app" class="ct-app min-h-screen">
