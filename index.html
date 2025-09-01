@@ -872,7 +872,7 @@
                     isLoadingTags.value = true;
                     selectedTags.value = []; // Clear selection when loading new tags
                     try {
-                        const response = await apiRequest(`/tags?type=${selectedType.value}`);
+                        const response = await apiRequest(`/tags/${selectedType.value}`);
                         tags.value = response.data || [];
                         console.log('Tags loaded:', tags.value);
                     } catch (error) {
@@ -936,13 +936,13 @@
                         
                         if (editingTag.value) {
                             // Update existing tag
-                            await apiRequest(`/tags/${editingTag.value.id}?type=${selectedType.value}`, {
+                            await apiRequest(`/tags/${selectedType.value}/${editingTag.value.id}`, {
                                 method: 'PUT',
                                 body: JSON.stringify(tagData)
                             });
                         } else {
                             // Create new tag
-                            await apiRequest(`/tags?type=${selectedType.value}`, {
+                            await apiRequest(`/tags/${selectedType.value}`, {
                                 method: 'POST',
                                 body: JSON.stringify(tagData)
                             });
@@ -1025,7 +1025,7 @@
                     }
                     
                     try {
-                        await apiRequest(`/tags/${tag.id}?type=${selectedType.value}`, {
+                        await apiRequest(`/tags/${selectedType.value}/${tag.id}`, {
                             method: 'DELETE'
                         });
                         showToast('success', 'Tag Deleted', `Tag "${tag.name}" was deleted successfully.`);
@@ -1102,7 +1102,7 @@
                                 throw new Error(`Tag with ID ${tagId} not found`);
                             }
                             
-                            return apiRequest(`/tags/${tagId}?type=${selectedType.value}`, {
+                            return apiRequest(`/tags/${selectedType.value}/${tagId}`, {
                                 method: 'PUT',
                                 body: JSON.stringify({ 
                                     name: tag.name, // Include existing name
@@ -1164,7 +1164,7 @@
                     
                     try {
                         const promises = selectedTags.value.map(tagId => 
-                            apiRequest(`/tags/${tagId}?type=${selectedType.value}`, {
+                            apiRequest(`/tags/${selectedType.value}/${tagId}`, {
                                 method: 'DELETE'
                             })
                         );
