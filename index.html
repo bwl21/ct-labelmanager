@@ -354,9 +354,9 @@ tin<!DOCTYPE html>
             background: white;
             border-radius: var(--ct-border-radius);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            max-width: 700px;
+            max-width: 800px;
             width: 95%;
-            max-height: 80vh;
+            max-height: 85vh;
             overflow-y: auto;
             animation: modalSlideIn 0.2s ease-out;
         }
@@ -408,33 +408,39 @@ tin<!DOCTYPE html>
         }
         
         .color-picker-body {
-            padding: 1.5rem;
+            padding: 1rem 1.5rem;
         }
         
         .color-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 0.75rem;
-            margin-bottom: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        @media (min-width: 640px) {
+            .color-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
         }
         
         @media (min-width: 768px) {
             .color-grid {
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(5, 1fr);
             }
         }
         
         @media (min-width: 1024px) {
             .color-grid {
-                grid-template-columns: repeat(4, 1fr);
+                grid-template-columns: repeat(6, 1fr);
             }
         }
         
         .color-option {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            padding: 1rem;
+            gap: 0.75rem;
+            padding: 0.75rem;
             border: 2px solid #e5e7eb;
             border-radius: var(--ct-border-radius);
             cursor: pointer;
@@ -454,8 +460,8 @@ tin<!DOCTYPE html>
         }
         
         .color-option-circle {
-            width: 32px;
-            height: 32px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             border: 2px solid #e5e7eb;
             flex-shrink: 0;
@@ -480,23 +486,17 @@ tin<!DOCTYPE html>
         .color-option-name {
             font-weight: 600;
             color: #374151;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.125rem;
+            font-size: 0.875rem;
         }
         
         .color-option-hex {
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             color: #6b7280;
             font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
         }
         
-        .color-picker-footer {
-            padding: 1rem 1.5rem;
-            border-top: 1px solid #e5e7eb;
-            display: flex;
-            justify-content: flex-end;
-            gap: 0.75rem;
-            background-color: #f9fafb;
-        }
+
         
         .hidden { display: none; }
         .overflow-x-auto { overflow-x: auto; }
@@ -977,18 +977,20 @@ tin<!DOCTYPE html>
         <div v-if="showColorPicker" class="color-picker-modal" @click.self="closeColorPicker">
             <div class="color-picker-content">
                 <div class="color-picker-header">
-                    <h3 class="color-picker-title">Choose a Color</h3>
+                    <div>
+                        <h3 class="color-picker-title">Choose a Color</h3>
+                        <p style="font-size: 0.875rem; color: #6b7280; margin: 0.25rem 0 0 0;">Click a color to select it, or press Escape to cancel</p>
+                    </div>
                     <button @click="closeColorPicker" class="color-picker-close">&times;</button>
                 </div>
                 
                 <div class="color-picker-body">
                     <!-- No Color Option at top -->
-                    <div style="margin-bottom: 1.5rem;">
+                    <div style="margin-bottom: 1rem;">
                         <div 
                             @click="selectColorInPicker('')"
                             class="color-option"
-                            :class="{ selected: selectedColorInPicker === '' }"
-                            style="max-width: 300px;"
+                            style="max-width: 280px;"
                         >
                             <span class="color-option-circle empty"></span>
                             <div class="color-option-info">
@@ -1004,7 +1006,6 @@ tin<!DOCTYPE html>
                             :key="color.value"
                             @click="selectColorInPicker(color.value)"
                             class="color-option"
-                            :class="{ selected: selectedColorInPicker === color.value }"
                         >
                             <span 
                                 class="color-option-circle" 
@@ -1017,11 +1018,6 @@ tin<!DOCTYPE html>
                             </div>
                         </div>
                     </div>
-                </div>
-                
-                <div class="color-picker-footer">
-                    <button @click="closeColorPicker" class="ct-btn ct-btn-secondary">Cancel</button>
-                    <button @click="confirmColorSelection" class="ct-btn ct-btn-primary">Select Color</button>
                 </div>
             </div>
         </div>
@@ -1856,6 +1852,8 @@ tin<!DOCTYPE html>
                 
                 const selectColorInPicker = (colorValue) => {
                     selectedColorInPicker.value = colorValue;
+                    // Directly apply the color selection
+                    confirmColorSelection();
                 };
                 
                 const confirmColorSelection = () => {
@@ -1867,9 +1865,19 @@ tin<!DOCTYPE html>
                     closeColorPicker();
                 };
                 
-                // Add click outside listener to close dropdowns
+                // Add click outside listener to close dropdowns and escape key handler
                 onMounted(() => {
                     document.addEventListener('click', closeBothDropdowns);
+                    
+                    // Add escape key handler for color picker
+                    document.addEventListener('keydown', (event) => {
+                        if (event.key === 'Escape') {
+                            if (showColorPicker.value) {
+                                closeColorPicker();
+                            }
+                            closeBothDropdowns();
+                        }
+                    });
                 });
                 
                 // Check for stored authentication on mount
