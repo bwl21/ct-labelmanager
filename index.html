@@ -1461,13 +1461,10 @@ tin<!DOCTYPE html>
                         };
                         
                         if (editingTag.value) {
-                            // Update existing tag using PUT method - try without domain in URL
+                            // Update existing tag using PUT method
                             await apiRequest(`/tags/${editingTag.value.id}`, {
                                 method: 'PUT',
-                                body: JSON.stringify({
-                                    ...tagData,
-                                    domainType: selectedType.value
-                                })
+                                body: JSON.stringify(tagData)
                             });
                         } else {
                             // Create new tag
@@ -1636,8 +1633,7 @@ tin<!DOCTYPE html>
                                 body: JSON.stringify({ 
                                     name: tag.name, // Include existing name
                                     description: tag.description || '', // Include existing description
-                                    color: bulkColor.value,
-                                    domainType: selectedType.value
+                                    color: bulkColor.value
                                 })
                             });
                         });
