@@ -1860,7 +1860,32 @@ tin<!DOCTYPE html>
                 // Attempt ChurchTools embedded authentication
                 const attemptChurchToolsAuth = async () => {
                     try {
-                        const baseUrl = window.location.origin;
+                        // In embedded mode, we need to get the ChurchTools host URL
+                        // Try to get it from document.referrer or parent window
+                        let baseUrl = '';
+                        
+                        if (document.referrer && document.referrer.includes('.church.tools')) {
+                            // Extract base URL from referrer
+                            const referrerUrl = new URL(document.referrer);
+                            baseUrl = `${referrerUrl.protocol}//${referrerUrl.hostname}`;
+                        } else if (window.parent !== window) {
+                            // Try to get from parent window location (if accessible)
+                            try {
+                                const parentUrl = new URL(window.parent.location.href);
+                                if (parentUrl.hostname.endsWith('.church.tools')) {
+                                    baseUrl = `${parentUrl.protocol}//${parentUrl.hostname}`;
+                                }
+                            } catch (e) {
+                                // Cross-origin restriction, try referrer fallback
+                                console.log('Cannot access parent window location due to CORS');
+                            }
+                        }
+                        
+                        if (!baseUrl) {
+                            console.log('Could not determine ChurchTools base URL for embedded mode');
+                            return false;
+                        }
+                        
                         loginForm.baseUrl = baseUrl;
                         
                         // Try to get current user info to verify session
