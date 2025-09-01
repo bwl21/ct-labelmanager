@@ -1172,7 +1172,9 @@ tin<!DOCTYPE html>
                         ...options.headers
                     };
 
-                    if (apiToken.value) {
+                    // Only add Authorization header if we have a token (standalone mode)
+                    // In embedded mode, we rely on session cookies
+                    if (apiToken.value && !isEmbeddedInChurchTools()) {
                         headers['Authorization'] = `Login ${apiToken.value}`;
                     }
 
@@ -1849,8 +1851,49 @@ tin<!DOCTYPE html>
                     });
                 });
                 
-                // Check for stored authentication on mount
-                onMounted(() => {
+                // Helper function to detect if running embedded in ChurchTools
+                const isEmbeddedInChurchTools = () => {
+                    const { hostname, pathname } = window.location;
+                    return hostname.endsWith('.church.tools') && pathname.startsWith('/ccm/');
+                };
+                
+                // Attempt ChurchTools embedded authentication
+                const attemptChurchToolsAuth = async () => {
+                    try {
+                        const baseUrl = window.location.origin;
+                        loginForm.baseUrl = baseUrl;
+                        
+                        // Try to get current user info to verify session
+                        const response = await fetch(`${baseUrl}/api/whoami`, {
+                            credentials: 'include',
+                            headers: {
+                                'Accept': 'application/json'
+                            }
+                        });
+                        
+                        if (response.ok) {
+                            const userData = await response.json();
+                            if (userData.data && userData.data.id) {
+                                // Successfully authenticated via ChurchTools session
+                                personId.value = userData.data.id;
+                                currentUser.value = userData.data.firstName + ' ' + userData.data.lastName;
+                                isAuthenticated.value = true;
+                                
+                                showToast('success', 'Authentication', 'Automatically authenticated via ChurchTools session');
+                                
+                                // Load tags automatically
+                                loadTags();
+                                return true;
+                            }
+                        }
+                    } catch (error) {
+                        console.log('ChurchTools auto-auth failed:', error);
+                    }
+                    return false;
+                };
+                
+                // Check for stored authentication (fallback for standalone mode)
+                const checkStoredAuthentication = () => {
                     const storedToken = localStorage.getItem('ct_login_token');
                     const storedPersonId = localStorage.getItem('ct_person_id');
                     const storedBaseUrl = localStorage.getItem('ct_base_url');
@@ -1865,6 +1908,23 @@ tin<!DOCTYPE html>
                         
                         // Load tags automatically
                         loadTags();
+                        return true;
+                    }
+                    return false;
+                };
+                
+                // Initialize authentication on mount
+                onMounted(async () => {
+                    if (isEmbeddedInChurchTools()) {
+                        // Try ChurchTools embedded authentication first
+                        const success = await attemptChurchToolsAuth();
+                        if (!success) {
+                            // Fallback to stored authentication if embedded auth fails
+                            checkStoredAuthentication();
+                        }
+                    } else {
+                        // Standalone mode - check stored authentication
+                        checkStoredAuthentication();
                     }
                 });
                 
