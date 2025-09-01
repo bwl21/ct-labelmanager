@@ -354,9 +354,9 @@ tin<!DOCTYPE html>
             background: white;
             border-radius: var(--ct-border-radius);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            max-width: 800px;
-            width: 95%;
-            max-height: 85vh;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
             overflow-y: auto;
             animation: modalSlideIn 0.2s ease-out;
         }
@@ -378,7 +378,7 @@ tin<!DOCTYPE html>
         }
         
         .color-picker-header {
-            padding: 1.5rem;
+            padding: 1rem 1rem 0.75rem 1rem;
             border-bottom: 1px solid #e5e7eb;
             display: flex;
             justify-content: space-between;
@@ -408,14 +408,20 @@ tin<!DOCTYPE html>
         }
         
         .color-picker-body {
-            padding: 1rem 1.5rem;
+            padding: 0.75rem 1rem;
         }
         
         .color-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 0.5rem;
-            margin-bottom: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 0.375rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        @media (min-width: 480px) {
+            .color-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
         
         @media (min-width: 640px) {
@@ -424,23 +430,11 @@ tin<!DOCTYPE html>
             }
         }
         
-        @media (min-width: 768px) {
-            .color-grid {
-                grid-template-columns: repeat(5, 1fr);
-            }
-        }
-        
-        @media (min-width: 1024px) {
-            .color-grid {
-                grid-template-columns: repeat(6, 1fr);
-            }
-        }
-        
         .color-option {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem;
+            gap: 0.5rem;
+            padding: 0.5rem;
             border: 2px solid #e5e7eb;
             border-radius: var(--ct-border-radius);
             cursor: pointer;
@@ -460,12 +454,12 @@ tin<!DOCTYPE html>
         }
         
         .color-option-circle {
-            width: 28px;
-            height: 28px;
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
             border: 2px solid #e5e7eb;
             flex-shrink: 0;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
         
         .color-option-circle.empty {
@@ -487,11 +481,11 @@ tin<!DOCTYPE html>
             font-weight: 600;
             color: #374151;
             margin-bottom: 0.125rem;
-            font-size: 0.875rem;
+            font-size: 0.8rem;
         }
         
         .color-option-hex {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: #6b7280;
             font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
         }
@@ -714,7 +708,7 @@ tin<!DOCTYPE html>
                             <option value="appointment">Appointment Tags</option>
                         </select>
                     </div>
-                    <div class="flex items-center space-x-2">
+                    <div class="flex items-center space-x-4">
                         <button @click="loadTags" class="ct-btn ct-btn-outline-primary ct-btn-sm">
                             <span v-if="isLoadingTags" class="spinner"></span>
                             Refresh
@@ -732,29 +726,32 @@ tin<!DOCTYPE html>
                         </div>
                     </div>
                     <div class="ct-card-body">
-                        <div class="flex flex-wrap items-center gap-4">
-                            <div class="flex items-center gap-2">
-                                <button @click="selectAll" class="ct-btn ct-btn-outline-primary ct-btn-sm" style="height: 36px;">Select All</button>
-                                <button @click="clearSelection" class="ct-btn ct-btn-outline-primary ct-btn-sm" style="height: 36px;">Clear Selection</button>
+                        <div class="flex flex-wrap items-center" style="gap: 2rem;">
+                            <!-- Selection Group -->
+                            <div class="flex items-center gap-4">
+                                <div class="flex items-center gap-2">
+                                    <button @click="selectAll" class="ct-btn ct-btn-outline-primary ct-btn-sm" style="height: 36px;">Select All</button>
+                                    <button @click="clearSelection" class="ct-btn ct-btn-outline-primary ct-btn-sm" style="height: 36px;">Clear Selection</button>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <input 
+                                        v-model="prefixFilter" 
+                                        type="text" 
+                                        placeholder="e.g., L:*" 
+                                        class="ct-form-control" 
+                                        style="width: 120px; height: 36px;"
+                                    >
+                                    <button @click="selectByPrefix" class="ct-btn ct-btn-outline-primary ct-btn-sm" style="height: 36px;">Select by Prefix</button>
+                                </div>
                             </div>
                             
-                            <div class="flex items-center gap-2">
-                                <input 
-                                    v-model="prefixFilter" 
-                                    type="text" 
-                                    placeholder="e.g., L:*" 
-                                    class="ct-form-control" 
-                                    style="width: 120px; height: 36px;"
-                                >
-                                <button @click="selectByPrefix" class="ct-btn ct-btn-outline-primary ct-btn-sm" style="height: 36px;">Select by Prefix</button>
-                            </div>
-                            
+                            <!-- Color Group -->
                             <div class="flex items-center gap-2">
                                 <button 
                                     @click="openColorPicker('bulk')" 
                                     class="color-dropdown-button"
                                     type="button"
-                                    style="min-width: 200px; height: 30px; font-size: 14px;"
+                                    style="min-width: 200px; height: 36px; font-size: 14px;"
                                 >
                                     <div class="color-dropdown-content">
                                         <span 
@@ -777,10 +774,13 @@ tin<!DOCTYPE html>
                                 </button>
                             </div>
                             
-                            <button @click="bulkDelete" :disabled="isBulkOperating" class="ct-btn ct-btn-danger ct-btn-sm" style="height: 36px; min-width: 120px;">
+                            <!-- Delete Group -->
+                            <div>
+                                <button @click="bulkDelete" :disabled="isBulkOperating" class="ct-btn ct-btn-danger ct-btn-sm" style="height: 36px; min-width: 120px;">
                                 <span v-if="isBulkOperating" class="spinner"></span>
                                 Delete Selected
                             </button>
+                            </div>
                         </div>
 
                     </div>
