@@ -3,129 +3,1256 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChurchTools Label Manager</title>
+    <title>ChurchTools Label Manager - Real API</title>
     <style>
+        :root {
+          --ct-primary: #007cba;
+          --ct-primary-hover: #0056b3;
+          --ct-secondary: #6c757d;
+          --ct-success: #28a745;
+          --ct-danger: #dc3545;
+          --ct-light: #f8f9fa;
+          --ct-dark: #343a40;
+          --ct-border-radius: 0.25rem;
+          --ct-box-shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+
         body {
             margin: 0;
             padding: 0;
             background-color: #f5f5f5;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
-        .header {
-            background: #007cba;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
-        .card {
-            background: white;
-            border-radius: 8px;
-            padding: 30px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .btn {
+
+        .ct-app { min-height: 100vh; background-color: var(--ct-light); }
+        .ct-btn { display: inline-flex; align-items: center; justify-content: center; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; border-radius: var(--ct-border-radius); border: 1px solid transparent; cursor: pointer; text-decoration: none; transition: all 0.2s ease; }
+        .ct-btn:disabled { opacity: 0.65; cursor: not-allowed; }
+        .ct-btn-primary { color: white; background-color: var(--ct-primary); border-color: var(--ct-primary); }
+        .ct-btn-primary:hover:not(:disabled) { background-color: var(--ct-primary-hover); }
+        .ct-btn-outline-primary { color: var(--ct-primary); border-color: var(--ct-primary); background-color: transparent; }
+        .ct-btn-outline-primary:hover:not(:disabled) { color: white; background-color: var(--ct-primary); }
+        .ct-btn-sm { padding: 0.25rem 0.75rem; font-size: 0.75rem; }
+        .ct-btn-lg { padding: 0.75rem 1.5rem; font-size: 1rem; }
+        .ct-btn-success { color: white; background-color: var(--ct-success); border-color: var(--ct-success); }
+        .ct-btn-danger { color: white; background-color: var(--ct-danger); border-color: var(--ct-danger); }
+        
+        .ct-form-control { width: 100%; padding: 0.5rem 0.75rem; font-size: 0.875rem; border: 1px solid #ced4da; border-radius: var(--ct-border-radius); box-sizing: border-box; }
+        .ct-form-control:focus { outline: none; border-color: var(--ct-primary); box-shadow: 0 0 0 2px rgba(0, 124, 186, 0.25); }
+        .ct-form-label { display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.25rem; color: var(--ct-dark); }
+        .ct-form-select { width: 100%; padding: 0.5rem 0.75rem; font-size: 0.875rem; border: 1px solid #ced4da; border-radius: var(--ct-border-radius); }
+        
+        .ct-card { background-color: white; border-radius: var(--ct-border-radius); border: 1px solid #e9ecef; box-shadow: var(--ct-box-shadow-sm); }
+        .ct-card-header { padding: 1rem; border-bottom: 1px solid #e9ecef; background-color: #f8f9fa; border-radius: var(--ct-border-radius) var(--ct-border-radius) 0 0; }
+        .ct-card-body { padding: 1rem; }
+        
+        .ct-table { width: 100%; font-size: 0.875rem; border-collapse: collapse; }
+        .ct-table th, .ct-table td { padding: 0.75rem; border-bottom: 1px solid #dee2e6; text-align: left; }
+        .ct-table th { font-weight: 600; background-color: #f8f9fa; }
+        .ct-table tbody tr:hover { background-color: #f8f9fa; }
+        
+        .ct-alert { padding: 0.75rem 1rem; border-radius: var(--ct-border-radius); border: 1px solid transparent; margin-bottom: 1rem; }
+        .ct-alert-info { color: #0c5460; background-color: #d1ecf1; border-color: #bee5eb; }
+        .ct-alert-danger { color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; }
+        .ct-alert-success { color: #155724; background-color: #d4edda; border-color: #c3e6cb; }
+        .ct-alert-warning { color: #856404; background-color: #fff3cd; border-color: #ffeaa7; }
+        
+        .ct-text-primary { color: var(--ct-primary); }
+        .max-w-md { max-width: 28rem; }
+        .max-w-7xl { max-width: 80rem; }
+        .mx-auto { margin-left: auto; margin-right: auto; }
+        .w-full { width: 100%; }
+        .min-h-screen { min-height: 100vh; }
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .py-6 { padding-top: 1.5rem; padding-bottom: 1.5rem; }
+        .h-16 { height: 4rem; }
+        .space-y-4 > * + * { margin-top: 1rem; }
+        .space-x-4 > * + * { margin-left: 1rem; }
+        .text-lg { font-size: 1.125rem; }
+        .text-xl { font-size: 1.25rem; }
+        .text-sm { font-size: 0.875rem; }
+        .text-xs { font-size: 0.75rem; }
+        .font-semibold { font-weight: 600; }
+        .text-gray-600 { color: #6b7280; }
+        .text-gray-500 { color: #9ca3af; }
+        .mt-1 { margin-top: 0.25rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mr-2 { margin-right: 0.5rem; }
+        .bg-white { background-color: white; }
+        .shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
+        .border-b { border-bottom-width: 1px; }
+        .border-gray-200 { border-color: #e5e7eb; }
+        
+        .ct-color-parent { background-color: #6c757d; }
+        .ct-color-default { background-color: #6c757d; }
+        .ct-color-accent { background-color: #007cba; }
+        .ct-color-amber { background-color: #f59e0b; }
+        .ct-color-basic { background-color: #6b7280; }
+        .ct-color-black { background-color: #000000; }
+        .ct-color-blue { background-color: #3b82f6; }
+        .ct-color-critical { background-color: #dc2626; }
+        .ct-color-constructive { background-color: #16a34a; }
+        .ct-color-destructive { background-color: #dc2626; }
+        .ct-color-cyan { background-color: #06b6d4; }
+        .ct-color-danger { background-color: #dc2626; }
+        .ct-color-emerald { background-color: #10b981; }
+        .ct-color-error { background-color: #dc2626; }
+        .ct-color-fuchsia { background-color: #d946ef; }
+        .ct-color-gray { background-color: #6b7280; }
+        .ct-color-green { background-color: #16a34a; }
+        .ct-color-indigo { background-color: #6366f1; }
+        .ct-color-info { background-color: #3b82f6; }
+        .ct-color-lime { background-color: #84cc16; }
+        .ct-color-magic { background-color: #8b5cf6; }
+        .ct-color-orange { background-color: #f97316; }
+        .ct-color-pink { background-color: #ec4899; }
+        .ct-color-purple { background-color: #a855f7; }
+        .ct-color-red { background-color: #dc2626; }
+        .ct-color-rose { background-color: #f43f5e; }
+        .ct-color-sky { background-color: #0ea5e9; }
+        .ct-color-success { background-color: #16a34a; }
+        .ct-color-teal { background-color: #14b8a6; }
+        .ct-color-violet { background-color: #8b5cf6; }
+        .ct-color-warning { background-color: #f59e0b; }
+        .ct-color-white { background-color: #ffffff; border: 1px solid #d1d5db; }
+        .ct-color-yellow { background-color: #eab308; }
+        
+        .color-dot { display: inline-block; width: 20px; height: 20px; border-radius: 50%; border: 1px solid #ddd; }
+        
+        .hidden { display: none; }
+        .overflow-x-auto { overflow-x: auto; }
+        .w-12 { width: 3rem; }
+        .bg-blue-50 { background-color: #eff6ff; }
+        .gap-4 > * + * { margin-left: 1rem; }
+        .gap-2 > * + * { margin-left: 0.5rem; }
+        .flex-wrap { flex-wrap: wrap; }
+        .rounded { border-radius: 0.25rem; }
+        
+        .spinner {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid var(--ct-primary);
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
             display: inline-block;
-            padding: 12px 24px;
-            background: #007cba;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            margin: 10px 10px 10px 0;
-            transition: background-color 0.2s;
-        }
-        .btn:hover {
-            background: #005a87;
-        }
-        .btn-secondary {
-            background: #6c757d;
-        }
-        .btn-secondary:hover {
-            background: #545b62;
-        }
-        .version-info {
-            background: #e7f3ff;
-            border: 1px solid #b3d9ff;
-            border-radius: 5px;
-            padding: 15px;
-            margin: 20px 0;
-        }
-        .feature-list {
-            list-style: none;
-            padding: 0;
-        }
-        .feature-list li {
-            padding: 8px 0;
-            border-bottom: 1px solid #eee;
-        }
-        .feature-list li:before {
-            content: "✅ ";
             margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: var(--ct-border-radius);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        /* ChurchTools Toast/Tippy Styles */
+        .ct-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1100;
+            min-width: 300px;
+            max-width: 500px;
+            background: white;
+            border-radius: var(--ct-border-radius);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-left: 4px solid;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            animation: slideInRight 0.3s ease-out;
+        }
+        
+        .ct-toast-success {
+            border-left-color: var(--ct-success);
+            background-color: #f0f9f0;
+        }
+        
+        .ct-toast-error {
+            border-left-color: var(--ct-danger);
+            background-color: #fdf2f2;
+        }
+        
+        .ct-toast-warning {
+            border-left-color: #f59e0b;
+            background-color: #fffbeb;
+        }
+        
+        .ct-toast-info {
+            border-left-color: var(--ct-primary);
+            background-color: #eff6ff;
+        }
+        
+        .ct-toast-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: var(--ct-dark);
+        }
+        
+        .ct-toast-message {
+            font-size: 0.875rem;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+        
+        .ct-toast-close {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            cursor: pointer;
+            color: #9ca3af;
+            padding: 0.25rem;
+            line-height: 1;
+        }
+        
+        .ct-toast-close:hover {
+            color: var(--ct-dark);
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+        
+        .ct-toast.slide-out {
+            animation: slideOutRight 0.3s ease-in forwards;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>ChurchTools Label Manager</h1>
-        <p>Professional tag management for ChurchTools</p>
-    </div>
-    
-    <div class="container">
-        <div class="card">
-            <h2>Vue.js Implementation (Recommended)</h2>
-            <p>Modern Vue.js-based interface with ChurchTools design system.</p>
-            
-            <div class="version-info">
-                <strong>Features:</strong>
-                <ul class="feature-list">
-                    <li>ChurchTools design system integration</li>
-                    <li>Responsive Vue.js components</li>
-                    <li>Modern authentication with token persistence</li>
-                    <li>Bulk operations for tag management</li>
-                    <li>Professional table-based interface</li>
-                    <li>Loading states and error handling</li>
-                </ul>
+    <div id="app" class="ct-app min-h-screen">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="flex justify-between items-center h-16">
+                    <h1 class="text-xl font-semibold ct-text-primary">ChurchTools Label Manager</h1>
+                    <div v-if="isAuthenticated" class="flex items-center space-x-4">
+                        <span class="text-sm text-gray-600">{{ currentUser }}</span>
+                        <button @click="logout" class="ct-btn ct-btn-outline-primary ct-btn-sm">Logout</button>
+                    </div>
+                </div>
             </div>
-            
-            <a href="inline-test.html" class="btn">Launch Vue App</a>
-        </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto py-6 px-4">
+            <!-- Login Form -->
+            <div v-if="!isAuthenticated" class="max-w-md mx-auto">
+                <div class="ct-card">
+                    <div class="ct-card-header">
+                        <h2 class="text-lg font-semibold">Login to ChurchTools</h2>
+                        <p class="text-sm text-gray-600 mt-1">Enter your credentials to manage labels</p>
+                    </div>
+                    <div class="ct-card-body space-y-4">
+                        <div>
+                            <label class="ct-form-label">ChurchTools URL</label>
+                            <input v-model="loginForm.baseUrl" type="url" class="ct-form-control" placeholder="https://your-church.church.tools">
+                        </div>
+                        <div>
+                            <label class="ct-form-label">Username</label>
+                            <input v-model="loginForm.username" type="text" class="ct-form-control" placeholder="Your username" @keyup.enter="login">
+                        </div>
+                        <div>
+                            <label class="ct-form-label">Password</label>
+                            <input v-model="loginForm.password" type="password" class="ct-form-control" placeholder="Your password" @keyup.enter="login">
+                        </div>
+                        <div v-if="loginError" class="ct-alert ct-alert-danger">
+                            <strong>Error:</strong> {{ loginError }}
+                        </div>
+                        <div v-if="loginStatus" class="ct-alert ct-alert-info">
+                            {{ loginStatus }}
+                        </div>
+                        <button @click="login" :disabled="isLoading" class="ct-btn ct-btn-primary w-full ct-btn-lg">
+                            <span v-if="isLoading" class="spinner"></span>
+                            {{ isLoading ? 'Logging in...' : 'Login to ChurchTools' }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Label Manager -->
+            <div v-else>
+                <!-- Controls -->
+                <div class="flex justify-between items-center mb-4">
+                    <div class="flex items-center space-x-4">
+                        <h2 class="text-xl font-semibold">Label Manager</h2>
+                        <select v-model="selectedType" @change="loadTags" class="ct-form-select" style="width: auto;">
+                            <option value="persons">Person Tags</option>
+                            <option value="songs">Song Tags</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button @click="loadTags" class="ct-btn ct-btn-outline-primary ct-btn-sm">
+                            <span v-if="isLoadingTags" class="spinner"></span>
+                            Refresh
+                        </button>
+                        <button @click="showCreateForm = true" class="ct-btn ct-btn-primary ct-btn-sm">Create Tag</button>
+                    </div>
+                </div>
+
+                <!-- Bulk Operations -->
+                <div class="ct-card mb-4">
+                    <div class="ct-card-header">
+                        <h3 class="font-semibold">🔧 Bulk Operations</h3>
+                        <p class="text-sm text-gray-600 mt-1">{{ selectedTags.length }} tags selected</p>
+                    </div>
+                    <div class="ct-card-body">
+                        <div class="flex flex-wrap items-center gap-4">
+                            <div class="flex items-center gap-2">
+                                <button @click="selectAll" class="ct-btn ct-btn-outline-primary ct-btn-sm">Select All</button>
+                                <button @click="clearSelection" class="ct-btn ct-btn-outline-primary ct-btn-sm">Clear Selection</button>
+                            </div>
+                            
+                            <div class="flex items-center gap-2">
+                                <input 
+                                    v-model="prefixFilter" 
+                                    type="text" 
+                                    placeholder="e.g., L:*" 
+                                    class="ct-form-control" 
+                                    style="width: 120px;"
+                                >
+                                <button @click="selectByPrefix" class="ct-btn ct-btn-outline-primary ct-btn-sm">Select by Prefix</button>
+                            </div>
+                            
+                            <div class="flex items-center gap-2">
+                                <select v-model="bulkColor" class="ct-form-select" style="width: auto;">
+                                    <option value="">Select Color</option>
+                                    <option value="parent">Parent</option>
+                                    <option value="default">Default</option>
+                                    <option value="accent">Accent</option>
+                                    <option value="amber">🟡 Amber</option>
+                                    <option value="basic">Basic</option>
+                                    <option value="black">⚫ Black</option>
+                                    <option value="blue">🔵 Blue</option>
+                                    <option value="critical">🔴 Critical</option>
+                                    <option value="constructive">🟢 Constructive</option>
+                                    <option value="destructive">🔴 Destructive</option>
+                                    <option value="cyan">🩵 Cyan</option>
+                                    <option value="danger">🔴 Danger</option>
+                                    <option value="emerald">🟢 Emerald</option>
+                                    <option value="error">🔴 Error</option>
+                                    <option value="fuchsia">🩷 Fuchsia</option>
+                                    <option value="gray">⚫ Gray</option>
+                                    <option value="green">🟢 Green</option>
+                                    <option value="indigo">🟣 Indigo</option>
+                                    <option value="info">🔵 Info</option>
+                                    <option value="lime">🟢 Lime</option>
+                                    <option value="magic">✨ Magic</option>
+                                    <option value="orange">🟠 Orange</option>
+                                    <option value="pink">🩷 Pink</option>
+                                    <option value="purple">🟣 Purple</option>
+                                    <option value="red">🔴 Red</option>
+                                    <option value="rose">🌹 Rose</option>
+                                    <option value="sky">🩵 Sky</option>
+                                    <option value="success">🟢 Success</option>
+                                    <option value="teal">🟦 Teal</option>
+                                    <option value="violet">🟣 Violet</option>
+                                    <option value="warning">🟡 Warning</option>
+                                    <option value="white">⚪ White</option>
+                                    <option value="yellow">🟡 Yellow</option>
+                                </select>
+                                <button @click="applyBulkColor" :disabled="!bulkColor || isBulkOperating" class="ct-btn ct-btn-success ct-btn-sm">
+                                    <span v-if="isBulkOperating" class="spinner"></span>
+                                    Apply Color
+                                </button>
+                            </div>
+                            
+                            <button @click="bulkDelete" :disabled="isBulkOperating" class="ct-btn ct-btn-danger ct-btn-sm">
+                                <span v-if="isBulkOperating" class="spinner"></span>
+                                Delete Selected
+                            </button>
+                        </div>
+                        
+                        <div v-if="bulkColor" class="mt-3 flex items-center gap-2">
+                            <span class="text-sm text-gray-600">Preview color:</span>
+                            <span :class="`color-dot ct-color-${bulkColor}`"></span>
+                            <span class="text-sm font-medium">{{ bulkColor }}</span>
+                        </div>
+                        
+
+                    </div>
+                </div>
+
+                <!-- Create/Edit Modal -->
+                <div v-if="showCreateForm || editingTag" class="modal-overlay" @click.self="cancelEdit">
+                    <div class="modal-content">
+                        <div class="ct-card-header">
+                            <h3 class="font-semibold">{{ editingTag ? 'Edit Tag' : 'Create New Tag' }}</h3>
+                        </div>
+                        <div class="ct-card-body space-y-4">
+                            <div>
+                                <label class="ct-form-label">Tag Name</label>
+                                <input 
+                                    v-model="tagForm.name" 
+                                    type="text" 
+                                    class="ct-form-control" 
+                                    placeholder="Enter tag name (1-100 characters)"
+                                    maxlength="100"
+                                >
+                                <p class="text-xs text-gray-500 mt-1">{{ tagForm.name.length }}/100 characters</p>
+                            </div>
+                            <div>
+                                <label class="ct-form-label">Description</label>
+                                <input 
+                                    v-model="tagForm.description" 
+                                    type="text" 
+                                    class="ct-form-control" 
+                                    placeholder="Enter tag description (optional)"
+                                    maxlength="255"
+                                >
+                                <p class="text-xs text-gray-500 mt-1">{{ (tagForm.description || '').length }}/255 characters</p>
+                            </div>
+                            <div>
+                                <label class="ct-form-label">Color</label>
+                                <select v-model="tagForm.color" class="ct-form-select">
+                                    <option value="">Select a color</option>
+                                    <option value="parent">Parent</option>
+                                    <option value="default">Default</option>
+                                    <option value="accent">Accent</option>
+                                    <option value="amber">🟡 Amber</option>
+                                    <option value="basic">Basic</option>
+                                    <option value="black">⚫ Black</option>
+                                    <option value="blue">🔵 Blue</option>
+                                    <option value="critical">🔴 Critical</option>
+                                    <option value="constructive">🟢 Constructive</option>
+                                    <option value="destructive">🔴 Destructive</option>
+                                    <option value="cyan">🩵 Cyan</option>
+                                    <option value="danger">🔴 Danger</option>
+                                    <option value="emerald">🟢 Emerald</option>
+                                    <option value="error">🔴 Error</option>
+                                    <option value="fuchsia">🩷 Fuchsia</option>
+                                    <option value="gray">⚫ Gray</option>
+                                    <option value="green">🟢 Green</option>
+                                    <option value="indigo">🟣 Indigo</option>
+                                    <option value="info">🔵 Info</option>
+                                    <option value="lime">🟢 Lime</option>
+                                    <option value="magic">✨ Magic</option>
+                                    <option value="orange">🟠 Orange</option>
+                                    <option value="pink">🩷 Pink</option>
+                                    <option value="purple">🟣 Purple</option>
+                                    <option value="red">🔴 Red</option>
+                                    <option value="rose">🌹 Rose</option>
+                                    <option value="sky">🩵 Sky</option>
+                                    <option value="success">🟢 Success</option>
+                                    <option value="teal">🟦 Teal</option>
+                                    <option value="violet">🟣 Violet</option>
+                                    <option value="warning">🟡 Warning</option>
+                                    <option value="white">⚪ White</option>
+                                    <option value="yellow">🟡 Yellow</option>
+                                </select>
+                            </div>
+                            <div v-if="tagError" class="ct-alert ct-alert-danger">{{ tagError }}</div>
+                            <div class="flex space-x-2">
+                                <button @click="saveTag" :disabled="isSaving" class="ct-btn ct-btn-primary">
+                                    <span v-if="isSaving" class="spinner"></span>
+                                    {{ editingTag ? 'Update' : 'Create' }}
+                                </button>
+                                <button @click="cancelEdit" class="ct-btn ct-btn-secondary">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tags Table -->
+                <div class="ct-card">
+                    <div class="ct-card-header">
+                        <h3 class="font-semibold">{{ selectedType === 'persons' ? 'Person Tags' : 'Song Tags' }} ({{ tags.length }})</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="ct-table">
+                            <thead>
+                                <tr>
+                                    <th class="w-12">
+                                        <input
+                                            type="checkbox"
+                                            :checked="allSelected"
+                                            @change="toggleSelectAll"
+                                            class="rounded"
+                                        />
+                                    </th>
+                                    <th @click="sortBy('id')" style="cursor: pointer;">
+                                        ID 
+                                        <span v-if="sortField === 'id'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                    </th>
+                                    <th @click="sortBy('name')" style="cursor: pointer;">
+                                        Name 
+                                        <span v-if="sortField === 'name'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                    </th>
+                                    <th @click="sortBy('description')" style="cursor: pointer;">
+                                        Description 
+                                        <span v-if="sortField === 'description'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                    </th>
+                                    <th @click="sortBy('color')" style="cursor: pointer;">
+                                        Color 
+                                        <span v-if="sortField === 'color'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                    </th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="tag in sortedTags" :key="tag.id" :class="{ 'bg-blue-50': selectedTags.includes(tag.id) }">
+                                    <td>
+                                        <input
+                                            type="checkbox"
+                                            :checked="selectedTags.includes(tag.id)"
+                                            @change="toggleTagSelection(tag.id)"
+                                            class="rounded"
+                                        />
+                                    </td>
+                                    <td class="text-gray-500">{{ tag.id }}</td>
+                                    <td class="font-semibold">{{ tag.name }}</td>
+                                    <td class="text-sm text-gray-600">{{ tag.description || '-' }}</td>
+                                    <td>
+                                        <span v-if="tag.color" :class="`color-dot ct-color-${tag.color}`" :title="tag.color"></span>
+                                        <span v-else class="text-gray-400">No color</span>
+                                    </td>
+                                    <td>
+                                        <button @click="editTag(tag)" class="ct-btn ct-btn-outline-primary ct-btn-sm mr-2">Edit</button>
+                                        <button @click="deleteTag(tag)" class="ct-btn ct-btn-danger ct-btn-sm">Delete</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div v-if="isLoadingTags" class="ct-card-body text-center">
+                            <span class="spinner"></span> Loading tags...
+                        </div>
+                        <div v-else-if="tags.length === 0" class="ct-card-body text-center text-gray-500">
+                            No tags found. Create your first tag to get started.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
         
-        <div class="card">
-            <h2>Legacy Implementation</h2>
-            <p>Original TypeScript implementation for compatibility.</p>
-            
-            <div class="version-info">
-                <strong>Features:</strong>
-                <ul class="feature-list">
-                    <li>Vanilla TypeScript implementation</li>
-                    <li>Basic CRUD operations</li>
-                    <li>Simple table interface</li>
-                    <li>ChurchTools API integration</li>
-                </ul>
-            </div>
-            
-            <a href="test-legacy.html" class="btn btn-secondary">Launch Legacy App</a>
-        </div>
-        
-        <div class="card">
-            <h2>Technical Information</h2>
-            <p><strong>ChurchTools Instance:</strong> testbernhard.church.tools</p>
-            <p><strong>API Endpoints:</strong> /api/tags, /api/login, /api/persons/{id}/logintoken</p>
-            <p><strong>Authentication:</strong> Username/Password → Session → Login Token</p>
-            <p><strong>Supported Tag Types:</strong> Persons, Songs</p>
-            
-            <div class="version-info">
-                <strong>Build Information:</strong><br>
-                Vue Version: Built with Vue 3 + TypeScript<br>
-                Bundle Size: ~82KB (main.js) + 6KB (main.css)<br>
-                Build Tool: Vite with modern ES modules
+        <!-- Toast Container -->
+        <div id="toast-container">
+            <div v-for="toast in toasts" :key="toast.id" :class="['ct-toast', `ct-toast-${toast.type}`, { 'slide-out': toast.removing }]">
+                <button @click="removeToast(toast.id)" class="ct-toast-close">&times;</button>
+                <div class="ct-toast-title">{{ toast.title }}</div>
+                <div class="ct-toast-message">{{ toast.message }}</div>
             </div>
         </div>
     </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script>
+        const { createApp, ref, reactive, computed, onMounted } = Vue;
+
+        createApp({
+            setup() {
+                const isAuthenticated = ref(false);
+                const currentUser = ref('');
+                const isLoading = ref(false);
+                const isLoadingTags = ref(false);
+                const isSaving = ref(false);
+                const loginError = ref('');
+                const loginStatus = ref('');
+                const tagError = ref('');
+                const selectedType = ref('persons');
+                const showCreateForm = ref(false);
+                const editingTag = ref(null);
+                const apiToken = ref('');
+                const personId = ref(null);
+                const selectedTags = ref([]);
+                const prefixFilter = ref('');
+                const bulkColor = ref('');
+                const isBulkOperating = ref(false);
+                const sortField = ref('name');
+                const sortDirection = ref('asc');
+                const toasts = ref([]);
+                
+                const loginForm = reactive({
+                    baseUrl: 'https://testbernhard.church.tools',
+                    username: '',
+                    password: ''
+                });
+                
+                const tagForm = reactive({
+                    name: '',
+                    description: '',
+                    color: ''
+                });
+                
+                const tags = ref([]);
+                
+                const allSelected = computed(() => 
+                    tags.value.length > 0 && selectedTags.value.length === tags.value.length
+                );
+                
+                const sortedTags = computed(() => {
+                    if (!tags.value.length) return [];
+                    
+                    return [...tags.value].sort((a, b) => {
+                        let aVal = a[sortField.value];
+                        let bVal = b[sortField.value];
+                        
+                        // Handle null/undefined values
+                        if (aVal == null) aVal = '';
+                        if (bVal == null) bVal = '';
+                        
+                        // Convert to string for comparison
+                        aVal = String(aVal).toLowerCase();
+                        bVal = String(bVal).toLowerCase();
+                        
+                        if (sortDirection.value === 'asc') {
+                            return aVal.localeCompare(bVal);
+                        } else {
+                            return bVal.localeCompare(aVal);
+                        }
+                    });
+                });
+                
+                // Toast Functions
+                const showToast = (type, title, message, duration = 5000) => {
+                    const id = Date.now() + Math.random();
+                    const toast = { id, type, title, message, removing: false };
+                    toasts.value.push(toast);
+                    
+                    setTimeout(() => {
+                        removeToast(id);
+                    }, duration);
+                };
+                
+                const removeToast = (id) => {
+                    const toast = toasts.value.find(t => t.id === id);
+                    if (toast) {
+                        toast.removing = true;
+                        setTimeout(() => {
+                            const index = toasts.value.findIndex(t => t.id === id);
+                            if (index > -1) {
+                                toasts.value.splice(index, 1);
+                            }
+                        }, 300); // Match animation duration
+                    }
+                };
+                
+                // API Helper Functions
+                const apiRequest = async (endpoint, options = {}) => {
+                    const url = `${loginForm.baseUrl}/api${endpoint}`;
+                    const headers = {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    };
+
+                    if (apiToken.value) {
+                        headers['Authorization'] = `Login ${apiToken.value}`;
+                    }
+
+                    const response = await fetch(url, {
+                        ...options,
+                        headers,
+                        credentials: 'include'
+                    });
+
+                    const responseText = await response.text();
+                    let data;
+                    
+                    // Check for PHP warnings in response
+                    const hasPhpWarnings = responseText.includes('<b>Warning</b>') || responseText.includes('<b>Notice</b>');
+                    
+                    try {
+                        if (hasPhpWarnings) {
+                            // Extract JSON from response with PHP warnings
+                            const jsonMatch = responseText.match(/\{[\s\S]*\}$/);
+                            if (jsonMatch) {
+                                data = JSON.parse(jsonMatch[0]);
+                                // Log the warnings for debugging
+                                console.warn('ChurchTools PHP Warnings detected:', responseText.split('{')[0]);
+                                
+                                // Show a warning toast about backend issues
+                                if (response.ok && data.data) {
+                                    showToast('warning', 'Backend Warning', 'The operation completed successfully, but there were backend warnings. Please check the browser console for details.');
+                                }
+                            } else {
+                                throw new Error('Could not parse response with PHP warnings');
+                            }
+                        } else {
+                            data = JSON.parse(responseText);
+                        }
+                    } catch (e) {
+                        console.error('Invalid JSON response:', responseText);
+                        throw new Error('Invalid response from server');
+                    }
+
+                    if (!response.ok) {
+                        const errorMessage = data.message || data.error || `HTTP ${response.status}: ${response.statusText}`;
+                        console.error('API Error:', data);
+                        throw new Error(errorMessage);
+                    }
+
+                    return data;
+                };
+                
+                const login = async () => {
+                    if (!loginForm.username || !loginForm.password) {
+                        loginError.value = 'Please enter username and password';
+                        return;
+                    }
+                    
+                    isLoading.value = true;
+                    loginError.value = '';
+                    loginStatus.value = 'Connecting to ChurchTools...';
+                    
+                    try {
+                        // Step 1: Login with credentials
+                        loginStatus.value = 'Authenticating...';
+                        const loginResponse = await fetch(`${loginForm.baseUrl}/api/login`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                            },
+                            credentials: 'include',
+                            body: JSON.stringify({
+                                username: loginForm.username,
+                                password: loginForm.password
+                            })
+                        });
+
+                        if (!loginResponse.ok) {
+                            const errorData = await loginResponse.json().catch(() => ({}));
+                            throw new Error(errorData.message || `Login failed: ${loginResponse.status} ${loginResponse.statusText}`);
+                        }
+
+                        const loginData = await loginResponse.json();
+                        console.log('Login response:', loginData);
+
+                        // Get person ID from response
+                        const pId = loginData.data?.personId || loginData.personId;
+                        if (!pId) {
+                            console.error('No person ID in login response:', loginData);
+                            throw new Error('Could not get person ID from login');
+                        }
+
+                        personId.value = pId;
+                        console.log('Login successful, person ID:', pId);
+
+                        // Step 2: Request login token
+                        loginStatus.value = 'Getting authentication token...';
+                        const tokenResponse = await fetch(`${loginForm.baseUrl}/api/persons/${pId}/logintoken`, {
+                            method: 'GET',
+                            headers: {
+                                'Accept': 'application/json',
+                            },
+                            credentials: 'include'
+                        });
+
+                        if (!tokenResponse.ok) {
+                            throw new Error(`Failed to get login token: ${tokenResponse.status} ${tokenResponse.statusText}`);
+                        }
+
+                        const tokenData = await tokenResponse.json();
+                        console.log('Token response:', tokenData);
+
+                        let token = null;
+                        if (tokenData.data && typeof tokenData.data === 'string') {
+                            token = tokenData.data;
+                        } else if (tokenData.token) {
+                            token = tokenData.token;
+                        }
+
+                        if (!token) {
+                            console.error('No token in response:', tokenData);
+                            throw new Error('No login token received');
+                        }
+
+                        // Store token and authenticate
+                        apiToken.value = token;
+                        currentUser.value = loginForm.username;
+                        isAuthenticated.value = true;
+                        
+                        // Store in localStorage for persistence
+                        localStorage.setItem('ct_login_token', token);
+                        localStorage.setItem('ct_person_id', pId.toString());
+                        localStorage.setItem('ct_base_url', loginForm.baseUrl);
+                        localStorage.setItem('ct_username', loginForm.username);
+                        
+                        console.log('Authentication successful, login token received and stored');
+                        
+                        // Load initial tags
+                        await loadTags();
+
+                    } catch (error) {
+                        console.error('Authentication error:', error);
+                        loginError.value = error.message;
+                        
+                        // Check for CORS or network issues
+                        if (error instanceof TypeError && error.message.includes('fetch')) {
+                            loginError.value = 'Network error: Cannot connect to ChurchTools. Please check the URL and your internet connection.';
+                        }
+                    } finally {
+                        isLoading.value = false;
+                        loginStatus.value = '';
+                    }
+                };
+                
+                const logout = async () => {
+                    try {
+                        if (apiToken.value && personId.value) {
+                            // Try to revoke the token on the server
+                            await fetch(`${loginForm.baseUrl}/api/persons/${personId.value}/logintoken`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'Authorization': `Login ${apiToken.value}`,
+                                    'Accept': 'application/json',
+                                },
+                                credentials: 'include'
+                            });
+                        }
+                    } catch (error) {
+                        console.error('Error revoking token:', error);
+                    } finally {
+                        // Always clear local state
+                        isAuthenticated.value = false;
+                        currentUser.value = '';
+                        apiToken.value = '';
+                        personId.value = null;
+                        tags.value = [];
+                        loginForm.username = '';
+                        loginForm.password = '';
+                        
+                        // Clear localStorage
+                        localStorage.removeItem('ct_login_token');
+                        localStorage.removeItem('ct_person_id');
+                        localStorage.removeItem('ct_base_url');
+                        localStorage.removeItem('ct_username');
+                    }
+                };
+                
+                const loadTags = async () => {
+                    if (!isAuthenticated.value) return;
+                    
+                    isLoadingTags.value = true;
+                    selectedTags.value = []; // Clear selection when loading new tags
+                    try {
+                        const response = await apiRequest(`/tags?type=${selectedType.value}`);
+                        tags.value = response.data || [];
+                        console.log('Tags loaded:', tags.value);
+                    } catch (error) {
+                        console.error('Error loading tags:', error);
+                        loginError.value = `Failed to load tags: ${error.message}`;
+                    } finally {
+                        isLoadingTags.value = false;
+                    }
+                };
+                
+                const editTag = (tag) => {
+                    editingTag.value = tag;
+                    tagForm.name = tag.name;
+                    tagForm.description = tag.description || '';
+                    tagForm.color = tag.color || '';
+                    showCreateForm.value = false;
+                };
+                
+                const saveTag = async () => {
+                    const trimmedName = tagForm.name.trim();
+                    
+                    if (!trimmedName) {
+                        tagError.value = 'Tag name is required';
+                        showToast('warning', 'Missing Name', 'Tag name is required');
+                        return;
+                    }
+                    
+                    if (trimmedName.length > 100) {
+                        tagError.value = 'Tag name must be between 1 and 100 characters';
+                        showToast('warning', 'Name Too Long', 'Tag name must be between 1 and 100 characters');
+                        return;
+                    }
+                    
+                    if (!tagForm.color) {
+                        tagError.value = 'Tag color is required';
+                        showToast('warning', 'Missing Color', 'Tag color is required');
+                        return;
+                    }
+                    
+                    // Check for duplicate names (case-insensitive)
+                    const existingTag = tags.value.find(tag => 
+                        tag.name.toLowerCase() === trimmedName.toLowerCase() && 
+                        (!editingTag.value || tag.id !== editingTag.value.id)
+                    );
+                    
+                    if (existingTag) {
+                        tagError.value = `A tag with the name "${trimmedName}" already exists`;
+                        showToast('warning', 'Duplicate Name', `A tag with the name "${trimmedName}" already exists. Please choose a different name.`);
+                        return;
+                    }
+                    
+                    isSaving.value = true;
+                    tagError.value = '';
+                    
+                    try {
+                        const tagData = {
+                            name: trimmedName,
+                            description: tagForm.description.trim() || '',
+                            color: tagForm.color
+                        };
+                        
+                        if (editingTag.value) {
+                            // Update existing tag
+                            await apiRequest(`/tags/${editingTag.value.id}?type=${selectedType.value}`, {
+                                method: 'PUT',
+                                body: JSON.stringify(tagData)
+                            });
+                        } else {
+                            // Create new tag
+                            await apiRequest(`/tags?type=${selectedType.value}`, {
+                                method: 'POST',
+                                body: JSON.stringify(tagData)
+                            });
+                        }
+                        
+                        showToast('success', 
+                            editingTag.value ? 'Tag Updated' : 'Tag Created', 
+                            `Tag "${trimmedName}" was ${editingTag.value ? 'updated' : 'created'} successfully.`
+                        );
+                        cancelEdit();
+                        await loadTags();
+                    } catch (error) {
+                        console.error('Error saving tag:', error);
+                        
+                        let errorMessage = error.message;
+                        let errorTitle = editingTag.value ? 'Update Failed' : 'Create Failed';
+                        
+                        // Handle duplicate entry errors
+                        if (error.message.includes('Duplicate entry') || error.message.includes('1062')) {
+                            errorTitle = 'Duplicate Tag';
+                            errorMessage = `A tag with the name "${tagForm.name.trim()}" already exists. Please choose a different name.`;
+                        }
+                        // Handle validation errors from ChurchTools
+                        else if (error.message.includes('validation')) {
+                            try {
+                                const errorData = JSON.parse(error.message.split('HTTP 400: ')[1] || '{}');
+                                if (errorData.errors && errorData.errors.length > 0) {
+                                    const fieldErrors = errorData.errors.map(err => `${err.fieldId}: ${err.message}`).join(', ');
+                                    errorMessage = `Validation error: ${fieldErrors}`;
+                                } else {
+                                    errorMessage = errorData.translatedMessage || error.message;
+                                }
+                            } catch (parseError) {
+                                errorMessage = error.message;
+                            }
+                        }
+                        // Handle server errors with HTML warnings
+                        else if (error.message.includes('<b>Warning</b>') || error.message.includes('server.error')) {
+                            try {
+                                // Extract JSON from HTML response
+                                const jsonMatch = error.message.match(/\{[\s\S]*\}$/);
+                                if (jsonMatch) {
+                                    const errorData = JSON.parse(jsonMatch[0]);
+                                    if (errorData.errors && errorData.errors.length > 0) {
+                                        const dbError = errorData.errors[0].message;
+                                        if (dbError.includes('Duplicate entry')) {
+                                            errorTitle = 'Duplicate Tag';
+                                            errorMessage = `A tag with the name "${tagForm.name.trim()}" already exists. Please choose a different name.`;
+                                        } else {
+                                            errorMessage = dbError;
+                                        }
+                                    } else {
+                                        errorMessage = errorData.translatedMessage || 'A server error occurred';
+                                    }
+                                }
+                            } catch (parseError) {
+                                errorMessage = 'A server error occurred. Please try again.';
+                            }
+                        }
+                        
+                        showToast('error', errorTitle, errorMessage);
+                        tagError.value = errorMessage;
+                    } finally {
+                        isSaving.value = false;
+                    }
+                };
+                
+                const cancelEdit = () => {
+                    showCreateForm.value = false;
+                    editingTag.value = null;
+                    tagForm.name = '';
+                    tagForm.description = '';
+                    tagForm.color = '';
+                    tagError.value = '';
+                };
+                
+                const deleteTag = async (tag) => {
+                    if (!confirm(`Are you sure you want to delete "${tag.name}"?`)) {
+                        return;
+                    }
+                    
+                    try {
+                        await apiRequest(`/tags/${tag.id}?type=${selectedType.value}`, {
+                            method: 'DELETE'
+                        });
+                        showToast('success', 'Tag Deleted', `Tag "${tag.name}" was deleted successfully.`);
+                        await loadTags();
+                    } catch (error) {
+                        console.error('Error deleting tag:', error);
+                        showToast('error', 'Delete Failed', `Failed to delete tag: ${error.message}`);
+                    }
+                };
+                
+                // Bulk Operations
+                const toggleSelectAll = () => {
+                    if (allSelected.value) {
+                        selectedTags.value = [];
+                    } else {
+                        selectedTags.value = tags.value.map(tag => tag.id);
+                    }
+                };
+                
+                const toggleTagSelection = (tagId) => {
+                    const index = selectedTags.value.indexOf(tagId);
+                    if (index > -1) {
+                        selectedTags.value.splice(index, 1);
+                    } else {
+                        selectedTags.value.push(tagId);
+                    }
+                };
+                
+                const selectAll = () => {
+                    selectedTags.value = tags.value.map(tag => tag.id);
+                };
+                
+                const clearSelection = () => {
+                    selectedTags.value = [];
+                };
+                
+                const selectByPrefix = () => {
+                    if (!prefixFilter.value.trim()) {
+                        showToast('warning', 'Missing Pattern', 'Please enter a prefix pattern (e.g., L:*)');
+                        return;
+                    }
+                    
+                    const pattern = prefixFilter.value.trim().replace('*', '');
+                    const matchingTags = tags.value.filter(tag => 
+                        tag.name.toLowerCase().startsWith(pattern.toLowerCase())
+                    );
+                    
+                    selectedTags.value = matchingTags.map(tag => tag.id);
+                    showToast('info', 'Tags Selected', `Selected ${matchingTags.length} tags matching "${pattern}"`);
+                };
+                
+                const applyBulkColor = async () => {
+                    if (!bulkColor.value) {
+                        showToast('warning', 'No Color Selected', 'Please select a color');
+                        return;
+                    }
+                    
+                    if (selectedTags.value.length === 0) {
+                        showToast('warning', 'No Tags Selected', 'Please select tags to update');
+                        return;
+                    }
+                    
+                    if (!confirm(`Apply ${bulkColor.value} color to ${selectedTags.value.length} selected tags?`)) {
+                        return;
+                    }
+                    
+                    isBulkOperating.value = true;
+                    
+                    try {
+                        const promises = selectedTags.value.map(tagId => {
+                            // Find the tag to get its current name
+                            const tag = tags.value.find(t => t.id === tagId);
+                            if (!tag) {
+                                throw new Error(`Tag with ID ${tagId} not found`);
+                            }
+                            
+                            return apiRequest(`/tags/${tagId}?type=${selectedType.value}`, {
+                                method: 'PUT',
+                                body: JSON.stringify({ 
+                                    name: tag.name, // Include existing name
+                                    description: tag.description || '', // Include existing description
+                                    color: bulkColor.value 
+                                })
+                            });
+                        });
+                        
+                        await Promise.all(promises);
+                        
+                        showToast('success', 'Bulk Update Complete', `Successfully updated ${selectedTags.value.length} tags to ${bulkColor.value}`);
+                        selectedTags.value = [];
+                        bulkColor.value = '';
+                        await loadTags();
+                        
+                    } catch (error) {
+                        console.error('Error applying bulk color:', error);
+                        
+                        // Parse ChurchTools validation errors
+                        let errorMessage = error.message;
+                        if (error.message.includes('validation')) {
+                            try {
+                                const errorData = JSON.parse(error.message.split('HTTP 400: ')[1] || '{}');
+                                if (errorData.translatedMessage) {
+                                    errorMessage = errorData.translatedMessage;
+                                    if (errorData.errors && errorData.errors.length > 0) {
+                                        const fieldErrors = errorData.errors.map(err => err.message).join(', ');
+                                        errorMessage += ` Details: ${fieldErrors}`;
+                                    }
+                                }
+                            } catch (parseError) {
+                                // Keep original error message
+                            }
+                        }
+                        
+                        showToast('error', 'Bulk Update Failed', `Failed to update tags: ${errorMessage}`);
+                    } finally {
+                        isBulkOperating.value = false;
+                    }
+                };
+                
+                const bulkDelete = async () => {
+                    if (selectedTags.value.length === 0) {
+                        showToast('warning', 'No Tags Selected', 'Please select tags to delete');
+                        return;
+                    }
+                    
+                    const selectedTagNames = tags.value
+                        .filter(tag => selectedTags.value.includes(tag.id))
+                        .map(tag => tag.name)
+                        .join(', ');
+                    
+                    if (!confirm(`Are you sure you want to delete ${selectedTags.value.length} selected tags?\n\nTags: ${selectedTagNames}\n\nThis action cannot be undone.`)) {
+                        return;
+                    }
+                    
+                    isBulkOperating.value = true;
+                    
+                    try {
+                        const promises = selectedTags.value.map(tagId => 
+                            apiRequest(`/tags/${tagId}?type=${selectedType.value}`, {
+                                method: 'DELETE'
+                            })
+                        );
+                        
+                        await Promise.all(promises);
+                        
+                        showToast('success', 'Bulk Delete Complete', `Successfully deleted ${selectedTags.value.length} tags`);
+                        selectedTags.value = [];
+                        await loadTags();
+                        
+                    } catch (error) {
+                        console.error('Error bulk deleting tags:', error);
+                        showToast('error', 'Bulk Delete Failed', `Failed to delete tags: ${error.message}`);
+                    } finally {
+                        isBulkOperating.value = false;
+                    }
+                };
+                
+                // Check for stored authentication on mount
+                onMounted(() => {
+                    const storedToken = localStorage.getItem('ct_login_token');
+                    const storedPersonId = localStorage.getItem('ct_person_id');
+                    const storedBaseUrl = localStorage.getItem('ct_base_url');
+                    const storedUsername = localStorage.getItem('ct_username');
+                    
+                    if (storedToken && storedPersonId && storedBaseUrl && storedUsername) {
+                        apiToken.value = storedToken;
+                        personId.value = parseInt(storedPersonId);
+                        loginForm.baseUrl = storedBaseUrl;
+                        currentUser.value = storedUsername;
+                        isAuthenticated.value = true;
+                        
+                        // Load tags automatically
+                        loadTags();
+                    }
+                });
+                
+                return {
+                    isAuthenticated,
+                    currentUser,
+                    isLoading,
+                    isLoadingTags,
+                    isSaving,
+                    loginError,
+                    loginStatus,
+                    tagError,
+                    selectedType,
+                    showCreateForm,
+                    editingTag,
+                    loginForm,
+                    tagForm,
+                    tags,
+                    selectedTags,
+                    prefixFilter,
+                    bulkColor,
+                    isBulkOperating,
+                    toasts,
+                    allSelected,
+                    login,
+                    logout,
+                    loadTags,
+                    editTag,
+                    saveTag,
+                    cancelEdit,
+                    deleteTag,
+                    toggleSelectAll,
+                    toggleTagSelection,
+                    selectAll,
+                    clearSelection,
+                    selectByPrefix,
+                    applyBulkColor,
+                    bulkDelete,
+                    sortedTags,
+                    sortField,
+                    sortDirection,
+                    sortBy: (field) => {
+                        if (sortField.value === field) {
+                            sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc';
+                        } else {
+                            sortField.value = field;
+                            sortDirection.value = 'asc';
+                        }
+                    },
+                    showToast,
+                    removeToast
+                };
+            }
+        }).mount('#app');
+    </script>
 </body>
 </html>

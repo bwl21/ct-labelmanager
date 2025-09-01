@@ -1,0 +1,23 @@
+{
+  "name": "ChurchTools Label Manager",
+  "shortname": "labelmanager",
+  "description": "Advanced tag management interface for ChurchTools with bulk operations, sorting, and enhanced UI",
+  "version": "2.0.0",
+  "author": "ChurchTools Community",
+  "churchtools_core_min_version": "3.125.0",
+  "permissions": [
+    "churchdb:view",
+    "churchdb:edit"
+  ],
+  "files": [
+    "index.html"
+  ],
+  "entry_point": "index.html",
+  "category": "administration",
+  "icon": "fa-tags",
+  "menu": {
+    "title": "Label Manager",
+    "icon": "fa-tags",
+    "order": 100
+  }
+}
