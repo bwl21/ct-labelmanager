@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+tin<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -136,6 +136,96 @@
             border: 2px solid #e5e7eb; 
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             flex-shrink: 0;
+        }
+        
+        /* Custom Color Dropdown Styles */
+        .color-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .color-dropdown-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #ced4da;
+            border-radius: var(--ct-border-radius);
+            background-color: white;
+            cursor: pointer;
+            min-width: 200px;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            width: 100%;
+            justify-content: space-between;
+        }
+        
+        .color-dropdown-button:hover {
+            border-color: var(--ct-primary);
+        }
+        
+        .color-dropdown-button:focus {
+            outline: none;
+            border-color: var(--ct-primary);
+            box-shadow: 0 0 0 2px rgba(0, 124, 186, 0.25);
+        }
+        
+        .color-dropdown-arrow {
+            font-size: 0.75rem;
+            color: #6b7280;
+            transition: transform 0.2s ease;
+        }
+        
+        .color-dropdown.open .color-dropdown-arrow {
+            transform: rotate(180deg);
+        }
+        
+        .color-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: white;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .color-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.5rem 0.75rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+        
+        .color-dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .color-dropdown-item.selected {
+            background-color: #e3f2fd;
+        }
+        
+        .color-dropdown-circle {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 1px solid #e5e7eb;
+            flex-shrink: 0;
+        }
+        
+        .color-dropdown-circle.empty {
+            background-color: #f3f4f6;
+            border: 2px dashed #d1d5db;
+        }
+        
+        .color-dropdown-circle.white {
+            border: 2px solid #d1d5db;
         }
         
         .hidden { display: none; }
@@ -378,11 +468,48 @@
                             </div>
                             
                             <div class="flex items-center gap-2">
-                                <select v-model="bulkColor" class="ct-form-select" style="width: auto;">
-                                    <option v-for="color in colorOptions" :key="color.value" :value="color.value">
-                                        {{ color.emoji }} {{ color.label }} {{ color.hex ? `(${color.hex})` : '' }}
-                                    </option>
-                                </select>
+                                <div class="color-dropdown" :class="{ open: showBulkColorDropdown }" @click.stop>
+                                    <button 
+                                        @click="toggleBulkColorDropdown" 
+                                        class="color-dropdown-button"
+                                        type="button"
+                                    >
+                                        <div class="flex items-center gap-2">
+                                            <span 
+                                                v-if="bulkColor"
+                                                class="color-dropdown-circle" 
+                                                :class="{ white: bulkColor === 'white' }"
+                                                :style="{ backgroundColor: getColorInfo(bulkColor).hex }"
+                                            ></span>
+                                            <span v-else class="color-dropdown-circle empty"></span>
+                                            <div class="flex flex-col items-start">
+                                                <span>{{ bulkColor ? getColorInfo(bulkColor).name : 'Select Color' }}</span>
+                                                <span v-if="bulkColor" class="text-gray-500 text-xs">{{ getColorInfo(bulkColor).hex }}</span>
+                                            </div>
+                                        </div>
+                                        <span class="color-dropdown-arrow">▼</span>
+                                    </button>
+                                    
+                                    <div v-if="showBulkColorDropdown" class="color-dropdown-menu">
+                                        <div 
+                                            v-for="color in colorOptions" 
+                                            :key="color.value"
+                                            @click="selectBulkColor(color.value)"
+                                            class="color-dropdown-item"
+                                            :class="{ selected: bulkColor === color.value }"
+                                        >
+                                            <span 
+                                                v-if="color.hex" 
+                                                class="color-dropdown-circle" 
+                                                :class="{ white: color.value === 'white' }"
+                                                :style="{ backgroundColor: color.hex }"
+                                            ></span>
+                                            <span v-else class="color-dropdown-circle empty"></span>
+                                            <span>{{ color.label }}</span>
+                                            <span v-if="color.hex" class="text-gray-500 text-xs ml-auto">({{ color.hex }})</span>
+                                        </div>
+                                    </div>
+                                </div>
                                 <button @click="applyBulkColor" :disabled="!bulkColor || isBulkOperating" class="ct-btn ct-btn-success ct-btn-sm">
                                     <span v-if="isBulkOperating" class="spinner"></span>
                                     Apply Color
@@ -439,11 +566,48 @@
                             </div>
                             <div>
                                 <label class="ct-form-label">Color</label>
-                                <select v-model="tagForm.color" class="ct-form-select">
-                                    <option v-for="color in colorOptions" :key="color.value" :value="color.value">
-                                        {{ color.emoji }} {{ color.label }} {{ color.hex ? `(${color.hex})` : '' }}
-                                    </option>
-                                </select>
+                                <div class="color-dropdown" :class="{ open: showTagColorDropdown }" @click.stop>
+                                    <button 
+                                        @click="toggleTagColorDropdown" 
+                                        class="color-dropdown-button"
+                                        type="button"
+                                    >
+                                        <div class="flex items-center gap-2">
+                                            <span 
+                                                v-if="tagForm.color"
+                                                class="color-dropdown-circle" 
+                                                :class="{ white: tagForm.color === 'white' }"
+                                                :style="{ backgroundColor: getColorInfo(tagForm.color).hex }"
+                                            ></span>
+                                            <span v-else class="color-dropdown-circle empty"></span>
+                                            <div class="flex flex-col items-start">
+                                                <span>{{ tagForm.color ? getColorInfo(tagForm.color).name : 'Select a color' }}</span>
+                                                <span v-if="tagForm.color" class="text-gray-500 text-xs">{{ getColorInfo(tagForm.color).hex }}</span>
+                                            </div>
+                                        </div>
+                                        <span class="color-dropdown-arrow">▼</span>
+                                    </button>
+                                    
+                                    <div v-if="showTagColorDropdown" class="color-dropdown-menu">
+                                        <div 
+                                            v-for="color in colorOptions" 
+                                            :key="color.value"
+                                            @click="selectTagColor(color.value)"
+                                            class="color-dropdown-item"
+                                            :class="{ selected: tagForm.color === color.value }"
+                                        >
+                                            <span 
+                                                v-if="color.hex" 
+                                                class="color-dropdown-circle" 
+                                                :class="{ white: color.value === 'white' }"
+                                                :style="{ backgroundColor: color.hex }"
+                                            ></span>
+                                            <span v-else class="color-dropdown-circle empty"></span>
+                                            <span>{{ color.label }}</span>
+                                            <span v-if="color.hex" class="text-gray-500 text-xs ml-auto">({{ color.hex }})</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div v-if="tagError" class="ct-alert ct-alert-danger">{{ tagError }}</div>
                             <div class="flex space-x-2">
@@ -573,6 +737,8 @@
                 const prefixFilter = ref('');
                 const bulkColor = ref('');
                 const isBulkOperating = ref(false);
+                const showBulkColorDropdown = ref(false);
+                const showTagColorDropdown = ref(false);
                 const sortField = ref('name');
                 const sortDirection = ref('asc');
                 const toasts = ref([]);
@@ -621,40 +787,40 @@
                 // Computed property for color options
                 const colorOptions = computed(() => {
                     return [
-                        { value: '', label: 'Select a color', emoji: '', hex: '' },
-                        { value: 'parent', label: 'Parent', emoji: '⚪', hex: '#6b7280' },
-                        { value: 'default', label: 'Default', emoji: '⚪', hex: '#6b7280' },
-                        { value: 'accent', label: 'Accent', emoji: '🔵', hex: '#007cba' },
-                        { value: 'amber', label: 'Amber', emoji: '🟡', hex: '#f59e0b' },
-                        { value: 'basic', label: 'Basic', emoji: '⚪', hex: '#6b7280' },
-                        { value: 'black', label: 'Black', emoji: '⚫', hex: '#000000' },
-                        { value: 'blue', label: 'Blue', emoji: '🔵', hex: '#3b82f6' },
-                        { value: 'critical', label: 'Critical', emoji: '🔴', hex: '#dc2626' },
-                        { value: 'constructive', label: 'Constructive', emoji: '🟢', hex: '#16a34a' },
-                        { value: 'destructive', label: 'Destructive', emoji: '🔴', hex: '#dc2626' },
-                        { value: 'cyan', label: 'Cyan', emoji: '🩵', hex: '#06b6d4' },
-                        { value: 'danger', label: 'Danger', emoji: '🔴', hex: '#dc2626' },
-                        { value: 'emerald', label: 'Emerald', emoji: '🟢', hex: '#10b981' },
-                        { value: 'error', label: 'Error', emoji: '🔴', hex: '#dc2626' },
-                        { value: 'fuchsia', label: 'Fuchsia', emoji: '🩷', hex: '#d946ef' },
-                        { value: 'gray', label: 'Gray', emoji: '⚫', hex: '#6b7280' },
-                        { value: 'green', label: 'Green', emoji: '🟢', hex: '#16a34a' },
-                        { value: 'indigo', label: 'Indigo', emoji: '🟣', hex: '#6366f1' },
-                        { value: 'info', label: 'Info', emoji: '🔵', hex: '#3b82f6' },
-                        { value: 'lime', label: 'Lime', emoji: '🟢', hex: '#84cc16' },
-                        { value: 'magic', label: 'Magic', emoji: '✨', hex: '#8b5cf6' },
-                        { value: 'orange', label: 'Orange', emoji: '🟠', hex: '#f97316' },
-                        { value: 'pink', label: 'Pink', emoji: '🩷', hex: '#ec4899' },
-                        { value: 'purple', label: 'Purple', emoji: '🟣', hex: '#a855f7' },
-                        { value: 'red', label: 'Red', emoji: '🔴', hex: '#dc2626' },
-                        { value: 'rose', label: 'Rose', emoji: '🌹', hex: '#f43f5e' },
-                        { value: 'sky', label: 'Sky', emoji: '🩵', hex: '#0ea5e9' },
-                        { value: 'success', label: 'Success', emoji: '🟢', hex: '#16a34a' },
-                        { value: 'teal', label: 'Teal', emoji: '🟦', hex: '#14b8a6' },
-                        { value: 'violet', label: 'Violet', emoji: '🟣', hex: '#8b5cf6' },
-                        { value: 'warning', label: 'Warning', emoji: '🟡', hex: '#f59e0b' },
-                        { value: 'white', label: 'White', emoji: '⚪', hex: '#ffffff' },
-                        { value: 'yellow', label: 'Yellow', emoji: '🟡', hex: '#eab308' }
+                        { value: '', label: 'Select a color', hex: '' },
+                        { value: 'parent', label: 'Parent', hex: '#6b7280' },
+                        { value: 'default', label: 'Default', hex: '#6b7280' },
+                        { value: 'accent', label: 'Accent', hex: '#007cba' },
+                        { value: 'amber', label: 'Amber', hex: '#f59e0b' },
+                        { value: 'basic', label: 'Basic', hex: '#6b7280' },
+                        { value: 'black', label: 'Black', hex: '#000000' },
+                        { value: 'blue', label: 'Blue', hex: '#3b82f6' },
+                        { value: 'critical', label: 'Critical', hex: '#dc2626' },
+                        { value: 'constructive', label: 'Constructive', hex: '#16a34a' },
+                        { value: 'destructive', label: 'Destructive', hex: '#dc2626' },
+                        { value: 'cyan', label: 'Cyan', hex: '#06b6d4' },
+                        { value: 'danger', label: 'Danger', hex: '#dc2626' },
+                        { value: 'emerald', label: 'Emerald', hex: '#10b981' },
+                        { value: 'error', label: 'Error', hex: '#dc2626' },
+                        { value: 'fuchsia', label: 'Fuchsia', hex: '#d946ef' },
+                        { value: 'gray', label: 'Gray', hex: '#6b7280' },
+                        { value: 'green', label: 'Green', hex: '#16a34a' },
+                        { value: 'indigo', label: 'Indigo', hex: '#6366f1' },
+                        { value: 'info', label: 'Info', hex: '#3b82f6' },
+                        { value: 'lime', label: 'Lime', hex: '#84cc16' },
+                        { value: 'magic', label: 'Magic', hex: '#8b5cf6' },
+                        { value: 'orange', label: 'Orange', hex: '#f97316' },
+                        { value: 'pink', label: 'Pink', hex: '#ec4899' },
+                        { value: 'purple', label: 'Purple', hex: '#a855f7' },
+                        { value: 'red', label: 'Red', hex: '#dc2626' },
+                        { value: 'rose', label: 'Rose', hex: '#f43f5e' },
+                        { value: 'sky', label: 'Sky', hex: '#0ea5e9' },
+                        { value: 'success', label: 'Success', hex: '#16a34a' },
+                        { value: 'teal', label: 'Teal', hex: '#14b8a6' },
+                        { value: 'violet', label: 'Violet', hex: '#8b5cf6' },
+                        { value: 'warning', label: 'Warning', hex: '#f59e0b' },
+                        { value: 'white', label: 'White', hex: '#ffffff' },
+                        { value: 'yellow', label: 'Yellow', hex: '#eab308' }
                     ];
                 });
                 
@@ -1250,6 +1416,37 @@
                     return colorMap[colorName] || { hex: '#6b7280', name: colorName, tailwind: 'gray-500' };
                 };
                 
+                // Custom dropdown functions
+                const selectBulkColor = (colorValue) => {
+                    bulkColor.value = colorValue;
+                    showBulkColorDropdown.value = false;
+                };
+                
+                const selectTagColor = (colorValue) => {
+                    tagForm.color = colorValue;
+                    showTagColorDropdown.value = false;
+                };
+                
+                const toggleBulkColorDropdown = () => {
+                    showBulkColorDropdown.value = !showBulkColorDropdown.value;
+                    showTagColorDropdown.value = false;
+                };
+                
+                const toggleTagColorDropdown = () => {
+                    showTagColorDropdown.value = !showTagColorDropdown.value;
+                    showBulkColorDropdown.value = false;
+                };
+                
+                const closeBothDropdowns = () => {
+                    showBulkColorDropdown.value = false;
+                    showTagColorDropdown.value = false;
+                };
+                
+                // Add click outside listener to close dropdowns
+                onMounted(() => {
+                    document.addEventListener('click', closeBothDropdowns);
+                });
+                
                 // Check for stored authentication on mount
                 onMounted(() => {
                     const storedToken = localStorage.getItem('ct_login_token');
@@ -1288,6 +1485,13 @@
                     prefixFilter,
                     bulkColor,
                     isBulkOperating,
+                    showBulkColorDropdown,
+                    showTagColorDropdown,
+                    selectBulkColor,
+                    selectTagColor,
+                    toggleBulkColorDropdown,
+                    toggleTagColorDropdown,
+                    closeBothDropdowns,
                     toasts,
                     allSelected,
                     login,
