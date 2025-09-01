@@ -324,7 +324,9 @@
                         <h2 class="text-xl font-semibold">Label Manager</h2>
                         <select v-model="selectedType" @change="loadTags" class="ct-form-select" style="width: auto;">
                             <option value="person">Person Tags</option>
+                            <option value="group">Group Tags</option>
                             <option value="song">Song Tags</option>
+                            <option value="appointment">Appointment Tags</option>
                         </select>
                     </div>
                     <div class="flex items-center space-x-2">
@@ -502,7 +504,7 @@
                 <!-- Tags Table -->
                 <div class="ct-card">
                     <div class="ct-card-header">
-                        <h3 class="font-semibold">{{ selectedType === 'person' ? 'Person Tags' : 'Song Tags' }} ({{ tags.length }})</h3>
+                        <h3 class="font-semibold">{{ getDisplayName(selectedType) }} ({{ tags.length }})</h3>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="ct-table">
@@ -1183,6 +1185,17 @@
                     }
                 };
                 
+                // Helper function to get display name for domain types
+                const getDisplayName = (domainType) => {
+                    const displayNames = {
+                        'person': 'Person Tags',
+                        'group': 'Group Tags', 
+                        'song': 'Song Tags',
+                        'appointment': 'Appointment Tags'
+                    };
+                    return displayNames[domainType] || `${domainType} Tags`;
+                };
+                
                 // Check for stored authentication on mount
                 onMounted(() => {
                     const storedToken = localStorage.getItem('ct_login_token');
@@ -1237,6 +1250,7 @@
                     selectByPrefix,
                     applyBulkColor,
                     bulkDelete,
+                    getDisplayName,
                     sortedTags,
                     sortField,
                     sortDirection,
