@@ -1050,7 +1050,3 @@ createApp({
         };
     }
 }).mount('#app');
-    </script>
-
-</body>
-</html>
