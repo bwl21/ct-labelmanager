@@ -156,7 +156,7 @@ tin<!DOCTYPE html>
             font-size: 0.875rem;
             transition: all 0.15s ease;
             width: 100%;
-            min-height: 42px;
+            min-height: 36px;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
         
@@ -754,7 +754,7 @@ tin<!DOCTYPE html>
                                     @click="openColorPicker('bulk')" 
                                     class="color-dropdown-button"
                                     type="button"
-                                    style="min-width: 200px; height: 36px; font-size: 14px;"
+                                    style="min-width: 200px; height: 30px; font-size: 14px;"
                                 >
                                     <div class="color-dropdown-content">
                                         <span 
@@ -900,14 +900,14 @@ tin<!DOCTYPE html>
                                     <td class="font-semibold">{{ tag.name }}</td>
                                     <td class="text-sm text-gray-600">{{ tag.description || '-' }}</td>
                                     <td>
-                                        <div v-if="tag.color" class="flex items-center gap-3">
+                                        <div v-if="tag.color" class="flex items-center gap-4">
                                             <span :class="`color-dot ct-color-${tag.color}`" :title="`${getColorInfo(tag.color).name} (${getColorInfo(tag.color).hex})`"></span>
                                             <div>
                                                 <div class="font-medium text-sm">{{ getColorInfo(tag.color).name }}</div>
                                                 <div class="text-xs text-gray-500">{{ getColorInfo(tag.color).hex }}</div>
                                             </div>
                                         </div>
-                                        <div v-else class="flex items-center gap-3">
+                                        <div v-else class="flex items-center gap-4">
                                             <span class="color-dot" style="background-color: #f3f4f6; border-color: #d1d5db;"></span>
                                             <div>
                                                 <div class="font-medium text-sm text-gray-400">No color</div>
