@@ -39,8 +39,11 @@ debug-*.html
 working-*.html
 temp-*.html
 
-# Old versions (keep only latest)
-ct-labelmanager-v1.*.zip
+# Build outputs
+ct-labelmanager-v*.zip
+
+# Keep only the latest version in git
+!ct-labelmanager-v2.0.0.zip
 
 # Development artifacts
 webpack.config.js
