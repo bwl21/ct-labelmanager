@@ -49,7 +49,7 @@ async function main() {
     logStep('1/6', 'Validating files...');
     
     // Validate required files
-    const requiredFiles = ['index.html', 'module.json', 'README.md', 'DEPLOYMENT.md'];
+    const requiredFiles = ['index.html', 'styles.css', 'app.js', 'module.json', 'README.md', 'DEPLOYMENT.md'];
     const missingFiles = requiredFiles.filter(file => !fs.existsSync(file));
     
     if (missingFiles.length > 0) {
