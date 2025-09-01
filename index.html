@@ -323,8 +323,8 @@
                     <div class="flex items-center space-x-4">
                         <h2 class="text-xl font-semibold">Label Manager</h2>
                         <select v-model="selectedType" @change="loadTags" class="ct-form-select" style="width: auto;">
-                            <option value="persons">Person Tags</option>
-                            <option value="songs">Song Tags</option>
+                            <option value="person">Person Tags</option>
+                            <option value="song">Song Tags</option>
                         </select>
                     </div>
                     <div class="flex items-center space-x-2">
@@ -502,7 +502,7 @@
                 <!-- Tags Table -->
                 <div class="ct-card">
                     <div class="ct-card-header">
-                        <h3 class="font-semibold">{{ selectedType === 'persons' ? 'Person Tags' : 'Song Tags' }} ({{ tags.length }})</h3>
+                        <h3 class="font-semibold">{{ selectedType === 'person' ? 'Person Tags' : 'Song Tags' }} ({{ tags.length }})</h3>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="ct-table">
@@ -594,7 +594,7 @@
                 const loginError = ref('');
                 const loginStatus = ref('');
                 const tagError = ref('');
-                const selectedType = ref('persons');
+                const selectedType = ref('person');
                 const showCreateForm = ref(false);
                 const editingTag = ref(null);
                 const apiToken = ref('');
