@@ -3,7 +3,7 @@ tin<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChurchTools Label Manager - Real API</title>
+    <title>ChurchTools Tag Manager - Real API</title>
     <style>
         :root {
           --ct-primary: #007cba;
@@ -376,7 +376,7 @@ tin<!DOCTYPE html>
         <header class="bg-white shadow-sm border-b border-gray-200">
             <div class="max-w-7xl mx-auto px-4">
                 <div class="flex justify-between items-center h-16">
-                    <h1 class="text-xl font-semibold ct-text-primary">ChurchTools Label Manager</h1>
+                    <h1 class="text-xl font-semibold ct-text-primary">ChurchTools Tag Manager</h1>
                     <div v-if="isAuthenticated" class="flex items-center space-x-4">
                         <span class="text-sm text-gray-600">{{ currentUser }}</span>
                         <button @click="logout" class="ct-btn ct-btn-outline-primary ct-btn-sm">Logout</button>
@@ -392,7 +392,7 @@ tin<!DOCTYPE html>
                 <div class="ct-card">
                     <div class="ct-card-header">
                         <h2 class="text-lg font-semibold">Login to ChurchTools</h2>
-                        <p class="text-sm text-gray-600 mt-1">Enter your credentials to manage labels</p>
+                        <p class="text-sm text-gray-600 mt-1">Enter your credentials to manage tags</p>
                     </div>
                     <div class="ct-card-body space-y-4">
                         <div>
@@ -421,12 +421,12 @@ tin<!DOCTYPE html>
                 </div>
             </div>
 
-            <!-- Label Manager -->
+            <!-- Tag Manager -->
             <div v-else>
                 <!-- Controls -->
                 <div class="flex justify-between items-center mb-4">
                     <div class="flex items-center space-x-4">
-                        <h2 class="text-xl font-semibold">Label Manager</h2>
+                        <h2 class="text-xl font-semibold">Tag Manager</h2>
                         <select v-model="selectedType" @change="loadTags" class="ct-form-select" style="width: auto;">
                             <option value="person">Person Tags</option>
                             <option value="group">Group Tags</option>
