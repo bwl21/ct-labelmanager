@@ -413,9 +413,21 @@ tin<!DOCTYPE html>
         
         .color-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.75rem;
             margin-bottom: 1.5rem;
+        }
+        
+        @media (min-width: 768px) {
+            .color-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .color-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
         }
         
         .color-option {
@@ -970,9 +982,25 @@ tin<!DOCTYPE html>
                 </div>
                 
                 <div class="color-picker-body">
+                    <!-- No Color Option at top -->
+                    <div style="margin-bottom: 1.5rem;">
+                        <div 
+                            @click="selectColorInPicker('')"
+                            class="color-option"
+                            :class="{ selected: selectedColorInPicker === '' }"
+                            style="max-width: 300px;"
+                        >
+                            <span class="color-option-circle empty"></span>
+                            <div class="color-option-info">
+                                <div class="color-option-name">No Color</div>
+                                <div class="color-option-hex">Remove color</div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="color-grid">
                         <div 
-                            v-for="color in colorOptions.filter(c => c.value !== '')" 
+                            v-for="color in sortedColorOptions" 
                             :key="color.value"
                             @click="selectColorInPicker(color.value)"
                             class="color-option"
@@ -986,19 +1014,6 @@ tin<!DOCTYPE html>
                             <div class="color-option-info">
                                 <div class="color-option-name">{{ color.label }}</div>
                                 <div class="color-option-hex">{{ color.hex }}</div>
-                            </div>
-                        </div>
-                        
-                        <!-- No Color Option -->
-                        <div 
-                            @click="selectColorInPicker('')"
-                            class="color-option"
-                            :class="{ selected: selectedColorInPicker === '' }"
-                        >
-                            <span class="color-option-circle empty"></span>
-                            <div class="color-option-info">
-                                <div class="color-option-name">No Color</div>
-                                <div class="color-option-hex">Remove color</div>
                             </div>
                         </div>
                     </div>
@@ -1123,6 +1138,40 @@ tin<!DOCTYPE html>
                         { value: 'white', label: 'White', hex: '#ffffff' },
                         { value: 'yellow', label: 'Yellow', hex: '#eab308' }
                     ];
+                });
+                
+                // Computed property for sorted colors by similarity
+                const sortedColorOptions = computed(() => {
+                    const colors = colorOptions.value.filter(c => c.value !== '');
+                    
+                    // Sort colors by category and hue
+                    return colors.sort((a, b) => {
+                        const categoryA = getColorCategory(a.value);
+                        const categoryB = getColorCategory(b.value);
+                        
+                        // First sort by category
+                        if (categoryA !== categoryB) {
+                            return categoryA - categoryB;
+                        }
+                        
+                        // Within same category, sort by hue
+                        const hslA = hexToHsl(a.hex);
+                        const hslB = hexToHsl(b.hex);
+                        
+                        // For grayscale colors, sort by lightness
+                        if (categoryA === 1) {
+                            return hslA.l - hslB.l;
+                        }
+                        
+                        // For colored items, sort by hue, then saturation, then lightness
+                        if (Math.abs(hslA.h - hslB.h) > 5) {
+                            return hslA.h - hslB.h;
+                        }
+                        if (Math.abs(hslA.s - hslB.s) > 10) {
+                            return hslB.s - hslA.s; // Higher saturation first
+                        }
+                        return hslA.l - hslB.l;
+                    });
                 });
                 
                 // Toast Functions
@@ -1717,6 +1766,50 @@ tin<!DOCTYPE html>
                     return colorMap[colorName] || { hex: '#6b7280', name: colorName, tailwind: 'gray-500' };
                 };
                 
+                // Helper function to convert hex to HSL for color sorting
+                const hexToHsl = (hex) => {
+                    if (!hex || hex === '') return { h: 0, s: 0, l: 0 };
+                    
+                    // Remove # if present
+                    hex = hex.replace('#', '');
+                    
+                    // Convert to RGB
+                    const r = parseInt(hex.substr(0, 2), 16) / 255;
+                    const g = parseInt(hex.substr(2, 2), 16) / 255;
+                    const b = parseInt(hex.substr(4, 2), 16) / 255;
+                    
+                    const max = Math.max(r, g, b);
+                    const min = Math.min(r, g, b);
+                    let h, s, l = (max + min) / 2;
+                    
+                    if (max === min) {
+                        h = s = 0; // achromatic
+                    } else {
+                        const d = max - min;
+                        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                        switch (max) {
+                            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                            case g: h = (b - r) / d + 2; break;
+                            case b: h = (r - g) / d + 4; break;
+                        }
+                        h /= 6;
+                    }
+                    
+                    return { h: h * 360, s: s * 100, l: l * 100 };
+                };
+                
+                // Function to get color category for special sorting
+                const getColorCategory = (colorValue) => {
+                    // System colors first
+                    if (['parent', 'default', 'basic'].includes(colorValue)) return 0;
+                    // Grayscale colors
+                    if (['black', 'gray', 'white'].includes(colorValue)) return 1;
+                    // Accent color
+                    if (colorValue === 'accent') return 2;
+                    // Regular colors
+                    return 3;
+                };
+                
                 // Custom dropdown functions
                 const selectBulkColor = (colorValue) => {
                     bulkColor.value = colorValue;
@@ -1850,6 +1943,7 @@ tin<!DOCTYPE html>
                     getDisplayName,
                     getColorInfo,
                     colorOptions,
+                    sortedColorOptions,
                     sortedTags,
                     sortField,
                     sortDirection,
