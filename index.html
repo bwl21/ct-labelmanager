@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+tin<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChurchTools Label Manager - Real API</title>
+    <title>ChurchTools Tag Manager - Real API</title>
     <style>
         :root {
           --ct-primary: #007cba;
@@ -87,41 +87,416 @@
         .border-b { border-bottom-width: 1px; }
         .border-gray-200 { border-color: #e5e7eb; }
         
-        .ct-color-parent { background-color: #6c757d; }
-        .ct-color-default { background-color: #6c757d; }
-        .ct-color-accent { background-color: #007cba; }
-        .ct-color-amber { background-color: #f59e0b; }
-        .ct-color-basic { background-color: #6b7280; }
-        .ct-color-black { background-color: #000000; }
-        .ct-color-blue { background-color: #3b82f6; }
-        .ct-color-critical { background-color: #dc2626; }
-        .ct-color-constructive { background-color: #16a34a; }
-        .ct-color-destructive { background-color: #dc2626; }
-        .ct-color-cyan { background-color: #06b6d4; }
-        .ct-color-danger { background-color: #dc2626; }
-        .ct-color-emerald { background-color: #10b981; }
-        .ct-color-error { background-color: #dc2626; }
-        .ct-color-fuchsia { background-color: #d946ef; }
-        .ct-color-gray { background-color: #6b7280; }
-        .ct-color-green { background-color: #16a34a; }
-        .ct-color-indigo { background-color: #6366f1; }
-        .ct-color-info { background-color: #3b82f6; }
-        .ct-color-lime { background-color: #84cc16; }
-        .ct-color-magic { background-color: #8b5cf6; }
-        .ct-color-orange { background-color: #f97316; }
-        .ct-color-pink { background-color: #ec4899; }
-        .ct-color-purple { background-color: #a855f7; }
-        .ct-color-red { background-color: #dc2626; }
-        .ct-color-rose { background-color: #f43f5e; }
-        .ct-color-sky { background-color: #0ea5e9; }
-        .ct-color-success { background-color: #16a34a; }
-        .ct-color-teal { background-color: #14b8a6; }
-        .ct-color-violet { background-color: #8b5cf6; }
-        .ct-color-warning { background-color: #f59e0b; }
-        .ct-color-white { background-color: #ffffff; border: 1px solid #d1d5db; }
-        .ct-color-yellow { background-color: #eab308; }
+        /* ChurchTools Color Palette - Tailwind CSS Standard Colors */
         
-        .color-dot { display: inline-block; width: 20px; height: 20px; border-radius: 50%; border: 1px solid #ddd; }
+        /* System Colors */
+        .ct-color-parent { background-color: #6b7280; } /* gray-500 */
+        .ct-color-default { background-color: #6b7280; } /* gray-500 */
+        .ct-color-accent { background-color: #007cba; } /* Custom ChurchTools blue */
+        .ct-color-basic { background-color: #6b7280; } /* gray-500 */
+        
+        /* Standard Tailwind Colors */
+        .ct-color-amber { background-color: #f59e0b; } /* amber-500 */
+        .ct-color-black { background-color: #000000; } /* black */
+        .ct-color-blue { background-color: #3b82f6; } /* blue-500 */
+        .ct-color-cyan { background-color: #06b6d4; } /* cyan-500 */
+        .ct-color-emerald { background-color: #10b981; } /* emerald-500 */
+        .ct-color-fuchsia { background-color: #d946ef; } /* fuchsia-500 */
+        .ct-color-gray { background-color: #6b7280; } /* gray-500 */
+        .ct-color-green { background-color: #16a34a; } /* green-600 */
+        .ct-color-indigo { background-color: #6366f1; } /* indigo-500 */
+        .ct-color-lime { background-color: #84cc16; } /* lime-500 */
+        .ct-color-orange { background-color: #f97316; } /* orange-500 */
+        .ct-color-pink { background-color: #ec4899; } /* pink-500 */
+        .ct-color-purple { background-color: #a855f7; } /* purple-500 */
+        .ct-color-red { background-color: #dc2626; } /* red-600 */
+        .ct-color-rose { background-color: #f43f5e; } /* rose-500 */
+        .ct-color-sky { background-color: #0ea5e9; } /* sky-500 */
+        .ct-color-teal { background-color: #14b8a6; } /* teal-500 */
+        .ct-color-violet { background-color: #8b5cf6; } /* violet-500 */
+        .ct-color-white { background-color: #ffffff; border: 1px solid #d1d5db; } /* white with gray-300 border */
+        .ct-color-yellow { background-color: #eab308; } /* yellow-500 */
+        
+        /* Semantic Colors */
+        .ct-color-critical { background-color: #dc2626; } /* red-600 */
+        .ct-color-constructive { background-color: #16a34a; } /* green-600 */
+        .ct-color-destructive { background-color: #dc2626; } /* red-600 */
+        .ct-color-danger { background-color: #dc2626; } /* red-600 */
+        .ct-color-error { background-color: #dc2626; } /* red-600 */
+        .ct-color-info { background-color: #3b82f6; } /* blue-500 */
+        .ct-color-success { background-color: #16a34a; } /* green-600 */
+        .ct-color-warning { background-color: #f59e0b; } /* amber-500 */
+        .ct-color-magic { background-color: #8b5cf6; } /* violet-500 */
+        
+        .color-dot { 
+            display: inline-block; 
+            width: 24px; 
+            height: 24px; 
+            border-radius: 50%; 
+            border: 2px solid #e5e7eb; 
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
+        }
+        
+        /* Custom Color Dropdown Styles */
+        .color-dropdown {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .color-dropdown-button {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: var(--ct-border-radius);
+            background-color: white;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.15s ease;
+            width: 100%;
+            min-height: 36px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .color-dropdown-button:hover {
+            border-color: var(--ct-primary);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .color-dropdown-button:focus {
+            outline: none;
+            border-color: var(--ct-primary);
+            box-shadow: 0 0 0 3px rgba(0, 124, 186, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .color-dropdown-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+        
+        .color-dropdown-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
+        }
+        
+        .color-dropdown-name {
+            font-weight: 500;
+            color: #374151;
+            line-height: 1.2;
+        }
+        
+        .color-dropdown-hex {
+            font-size: 0.75rem;
+            color: #6b7280;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        }
+        
+        .color-dropdown-arrow {
+            font-size: 0.75rem;
+            color: #9ca3af;
+            transition: transform 0.15s ease;
+            margin-left: 8px;
+        }
+        
+        .color-dropdown.open .color-dropdown-arrow {
+            transform: rotate(180deg);
+        }
+        
+        .color-dropdown-menu {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            background-color: white;
+            border: 1px solid #d1d5db;
+            border-radius: var(--ct-border-radius);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+            z-index: 1000;
+            max-height: 280px;
+            overflow-y: auto;
+            animation: dropdownFadeIn 0.15s ease-out;
+            margin-top: 2px;
+        }
+        
+        @keyframes dropdownFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .color-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: background-color 0.1s ease;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        
+        .color-dropdown-item:last-child {
+            border-bottom: none;
+        }
+        
+        .color-dropdown-item:hover {
+            background-color: #f8fafc;
+        }
+        
+        .color-dropdown-item.selected {
+            background-color: #eff6ff;
+            border-left: 3px solid var(--ct-primary);
+            padding-left: calc(1rem - 3px);
+        }
+        
+        .color-dropdown-item-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
+            flex: 1;
+        }
+        
+        .color-dropdown-item-name {
+            font-weight: 500;
+            color: #374151;
+            line-height: 1.2;
+        }
+        
+        .color-dropdown-item-hex {
+            font-size: 0.75rem;
+            color: #6b7280;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        }
+        
+        .color-dropdown-circle {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #e5e7eb;
+            flex-shrink: 0;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        
+        .color-dropdown-circle.empty {
+            background-color: #f9fafb;
+            border: 2px dashed #d1d5db;
+            box-shadow: none;
+        }
+        
+        .color-dropdown-circle.white {
+            border: 2px solid #d1d5db;
+            background-color: #ffffff;
+        }
+        
+        /* Custom scrollbar for dropdown */
+        .color-dropdown-menu::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .color-dropdown-menu::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 3px;
+        }
+        
+        .color-dropdown-menu::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        
+        .color-dropdown-menu::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        /* Improve focus states */
+        .color-dropdown-item:focus {
+            outline: none;
+            background-color: #f1f5f9;
+        }
+        
+        /* Better empty state styling */
+        .color-dropdown-item:first-child .color-dropdown-circle.empty {
+            background: linear-gradient(45deg, #f9fafb 25%, transparent 25%), 
+                        linear-gradient(-45deg, #f9fafb 25%, transparent 25%), 
+                        linear-gradient(45deg, transparent 75%, #f9fafb 75%), 
+                        linear-gradient(-45deg, transparent 75%, #f9fafb 75%);
+            background-size: 4px 4px;
+            background-position: 0 0, 0 2px, 2px -2px, -2px 0px;
+        }
+        
+        /* Color Picker Modal Styles */
+        .color-picker-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1100;
+            animation: modalFadeIn 0.2s ease-out;
+        }
+        
+        .color-picker-content {
+            background: white;
+            border-radius: var(--ct-border-radius);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 95%;
+            max-height: 85vh;
+            overflow-y: auto;
+            animation: modalSlideIn 0.2s ease-out;
+        }
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes modalSlideIn {
+            from { 
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .color-picker-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .color-picker-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .color-picker-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 0.25rem;
+            transition: all 0.15s ease;
+        }
+        
+        .color-picker-close:hover {
+            background-color: #f3f4f6;
+            color: #374151;
+        }
+        
+        .color-picker-body {
+            padding: 1rem 1.5rem;
+        }
+        
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        @media (min-width: 640px) {
+            .color-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .color-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .color-grid {
+                grid-template-columns: repeat(6, 1fr);
+            }
+        }
+        
+        .color-option {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: var(--ct-border-radius);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            background-color: white;
+        }
+        
+        .color-option:hover {
+            border-color: var(--ct-primary);
+            box-shadow: 0 2px 8px rgba(0, 124, 186, 0.1);
+        }
+        
+        .color-option.selected {
+            border-color: var(--ct-primary);
+            background-color: #eff6ff;
+            box-shadow: 0 2px 8px rgba(0, 124, 186, 0.2);
+        }
+        
+        .color-option-circle {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 2px solid #e5e7eb;
+            flex-shrink: 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .color-option-circle.empty {
+            background-color: #f9fafb;
+            border: 2px dashed #d1d5db;
+            box-shadow: none;
+        }
+        
+        .color-option-circle.white {
+            border: 2px solid #d1d5db;
+            background-color: #ffffff;
+        }
+        
+        .color-option-info {
+            flex: 1;
+        }
+        
+        .color-option-name {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.125rem;
+            font-size: 0.875rem;
+        }
+        
+        .color-option-hex {
+            font-size: 0.75rem;
+            color: #6b7280;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        }
+        
+
         
         .hidden { display: none; }
         .overflow-x-auto { overflow-x: auto; }
@@ -166,8 +541,18 @@
             background: white;
             border-radius: var(--ct-border-radius);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            max-width: 500px;
-            width: 90%;
+            max-width: 600px;
+            width: 95%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-content-large {
+            background: white;
+            border-radius: var(--ct-border-radius);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            max-width: 800px;
+            width: 95%;
             max-height: 90vh;
             overflow-y: auto;
         }
@@ -271,7 +656,7 @@
         <header class="bg-white shadow-sm border-b border-gray-200">
             <div class="max-w-7xl mx-auto px-4">
                 <div class="flex justify-between items-center h-16">
-                    <h1 class="text-xl font-semibold ct-text-primary">ChurchTools Label Manager</h1>
+                    <h1 class="text-xl font-semibold ct-text-primary">ChurchTools Tag Manager</h1>
                     <div v-if="isAuthenticated" class="flex items-center space-x-4">
                         <span class="text-sm text-gray-600">{{ currentUser }}</span>
                         <button @click="logout" class="ct-btn ct-btn-outline-primary ct-btn-sm">Logout</button>
@@ -287,7 +672,7 @@
                 <div class="ct-card">
                     <div class="ct-card-header">
                         <h2 class="text-lg font-semibold">Login to ChurchTools</h2>
-                        <p class="text-sm text-gray-600 mt-1">Enter your credentials to manage labels</p>
+                        <p class="text-sm text-gray-600 mt-1">Enter your credentials to manage tags</p>
                     </div>
                     <div class="ct-card-body space-y-4">
                         <div>
@@ -316,15 +701,17 @@
                 </div>
             </div>
 
-            <!-- Label Manager -->
+            <!-- Tag Manager -->
             <div v-else>
                 <!-- Controls -->
                 <div class="flex justify-between items-center mb-4">
                     <div class="flex items-center space-x-4">
-                        <h2 class="text-xl font-semibold">Label Manager</h2>
+                        <h2 class="text-xl font-semibold">Tag Manager</h2>
                         <select v-model="selectedType" @change="loadTags" class="ct-form-select" style="width: auto;">
-                            <option value="persons">Person Tags</option>
-                            <option value="songs">Song Tags</option>
+                            <option value="person">Person Tags</option>
+                            <option value="group">Group Tags</option>
+                            <option value="song">Song Tags</option>
+                            <option value="appointment">Appointment Tags</option>
                         </select>
                     </div>
                     <div class="flex items-center space-x-2">
@@ -339,14 +726,16 @@
                 <!-- Bulk Operations -->
                 <div class="ct-card mb-4">
                     <div class="ct-card-header">
-                        <h3 class="font-semibold">🔧 Bulk Operations</h3>
-                        <p class="text-sm text-gray-600 mt-1">{{ selectedTags.length }} tags selected</p>
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-semibold text-gray-800">🔧 Bulk Operations</h3>
+                            <span class="text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded">{{ selectedTags.length }} selected</span>
+                        </div>
                     </div>
                     <div class="ct-card-body">
                         <div class="flex flex-wrap items-center gap-4">
                             <div class="flex items-center gap-2">
-                                <button @click="selectAll" class="ct-btn ct-btn-outline-primary ct-btn-sm">Select All</button>
-                                <button @click="clearSelection" class="ct-btn ct-btn-outline-primary ct-btn-sm">Clear Selection</button>
+                                <button @click="selectAll" class="ct-btn ct-btn-outline-primary ct-btn-sm" style="height: 36px;">Select All</button>
+                                <button @click="clearSelection" class="ct-btn ct-btn-outline-primary ct-btn-sm" style="height: 36px;">Clear Selection</button>
                             </div>
                             
                             <div class="flex items-center gap-2">
@@ -355,66 +744,44 @@
                                     type="text" 
                                     placeholder="e.g., L:*" 
                                     class="ct-form-control" 
-                                    style="width: 120px;"
+                                    style="width: 120px; height: 36px;"
                                 >
-                                <button @click="selectByPrefix" class="ct-btn ct-btn-outline-primary ct-btn-sm">Select by Prefix</button>
+                                <button @click="selectByPrefix" class="ct-btn ct-btn-outline-primary ct-btn-sm" style="height: 36px;">Select by Prefix</button>
                             </div>
                             
                             <div class="flex items-center gap-2">
-                                <select v-model="bulkColor" class="ct-form-select" style="width: auto;">
-                                    <option value="">Select Color</option>
-                                    <option value="parent">Parent</option>
-                                    <option value="default">Default</option>
-                                    <option value="accent">Accent</option>
-                                    <option value="amber">🟡 Amber</option>
-                                    <option value="basic">Basic</option>
-                                    <option value="black">⚫ Black</option>
-                                    <option value="blue">🔵 Blue</option>
-                                    <option value="critical">🔴 Critical</option>
-                                    <option value="constructive">🟢 Constructive</option>
-                                    <option value="destructive">🔴 Destructive</option>
-                                    <option value="cyan">🩵 Cyan</option>
-                                    <option value="danger">🔴 Danger</option>
-                                    <option value="emerald">🟢 Emerald</option>
-                                    <option value="error">🔴 Error</option>
-                                    <option value="fuchsia">🩷 Fuchsia</option>
-                                    <option value="gray">⚫ Gray</option>
-                                    <option value="green">🟢 Green</option>
-                                    <option value="indigo">🟣 Indigo</option>
-                                    <option value="info">🔵 Info</option>
-                                    <option value="lime">🟢 Lime</option>
-                                    <option value="magic">✨ Magic</option>
-                                    <option value="orange">🟠 Orange</option>
-                                    <option value="pink">🩷 Pink</option>
-                                    <option value="purple">🟣 Purple</option>
-                                    <option value="red">🔴 Red</option>
-                                    <option value="rose">🌹 Rose</option>
-                                    <option value="sky">🩵 Sky</option>
-                                    <option value="success">🟢 Success</option>
-                                    <option value="teal">🟦 Teal</option>
-                                    <option value="violet">🟣 Violet</option>
-                                    <option value="warning">🟡 Warning</option>
-                                    <option value="white">⚪ White</option>
-                                    <option value="yellow">🟡 Yellow</option>
-                                </select>
-                                <button @click="applyBulkColor" :disabled="!bulkColor || isBulkOperating" class="ct-btn ct-btn-success ct-btn-sm">
+                                <button 
+                                    @click="openColorPicker('bulk')" 
+                                    class="color-dropdown-button"
+                                    type="button"
+                                    style="min-width: 200px; height: 30px; font-size: 14px;"
+                                >
+                                    <div class="color-dropdown-content">
+                                        <span 
+                                            v-if="bulkColor"
+                                            class="color-dropdown-circle" 
+                                            :class="{ white: bulkColor === 'white' }"
+                                            :style="{ backgroundColor: getColorInfo(bulkColor).hex, width: '18px', height: '18px' }"
+                                        ></span>
+                                        <span v-else class="color-dropdown-circle empty" style="width: 18px; height: 18px;"></span>
+                                        <div class="color-dropdown-info">
+                                            <span class="color-dropdown-name">{{ bulkColor ? getColorInfo(bulkColor).name : 'Select Color' }}</span>
+                                            <span v-if="bulkColor" class="color-dropdown-hex">{{ getColorInfo(bulkColor).hex }}</span>
+                                        </div>
+                                    </div>
+                                    <span class="color-dropdown-arrow">▼</span>
+                                </button>
+                                <button @click="applyBulkColor" :disabled="!bulkColor || isBulkOperating" class="ct-btn ct-btn-success ct-btn-sm" style="height: 36px; min-width: 100px;">
                                     <span v-if="isBulkOperating" class="spinner"></span>
                                     Apply Color
                                 </button>
                             </div>
                             
-                            <button @click="bulkDelete" :disabled="isBulkOperating" class="ct-btn ct-btn-danger ct-btn-sm">
+                            <button @click="bulkDelete" :disabled="isBulkOperating" class="ct-btn ct-btn-danger ct-btn-sm" style="height: 36px; min-width: 120px;">
                                 <span v-if="isBulkOperating" class="spinner"></span>
                                 Delete Selected
                             </button>
                         </div>
-                        
-                        <div v-if="bulkColor" class="mt-3 flex items-center gap-2">
-                            <span class="text-sm text-gray-600">Preview color:</span>
-                            <span :class="`color-dot ct-color-${bulkColor}`"></span>
-                            <span class="text-sm font-medium">{{ bulkColor }}</span>
-                        </div>
-                        
 
                     </div>
                 </div>
@@ -450,42 +817,26 @@
                             </div>
                             <div>
                                 <label class="ct-form-label">Color</label>
-                                <select v-model="tagForm.color" class="ct-form-select">
-                                    <option value="">Select a color</option>
-                                    <option value="parent">Parent</option>
-                                    <option value="default">Default</option>
-                                    <option value="accent">Accent</option>
-                                    <option value="amber">🟡 Amber</option>
-                                    <option value="basic">Basic</option>
-                                    <option value="black">⚫ Black</option>
-                                    <option value="blue">🔵 Blue</option>
-                                    <option value="critical">🔴 Critical</option>
-                                    <option value="constructive">🟢 Constructive</option>
-                                    <option value="destructive">🔴 Destructive</option>
-                                    <option value="cyan">🩵 Cyan</option>
-                                    <option value="danger">🔴 Danger</option>
-                                    <option value="emerald">🟢 Emerald</option>
-                                    <option value="error">🔴 Error</option>
-                                    <option value="fuchsia">🩷 Fuchsia</option>
-                                    <option value="gray">⚫ Gray</option>
-                                    <option value="green">🟢 Green</option>
-                                    <option value="indigo">🟣 Indigo</option>
-                                    <option value="info">🔵 Info</option>
-                                    <option value="lime">🟢 Lime</option>
-                                    <option value="magic">✨ Magic</option>
-                                    <option value="orange">🟠 Orange</option>
-                                    <option value="pink">🩷 Pink</option>
-                                    <option value="purple">🟣 Purple</option>
-                                    <option value="red">🔴 Red</option>
-                                    <option value="rose">🌹 Rose</option>
-                                    <option value="sky">🩵 Sky</option>
-                                    <option value="success">🟢 Success</option>
-                                    <option value="teal">🟦 Teal</option>
-                                    <option value="violet">🟣 Violet</option>
-                                    <option value="warning">🟡 Warning</option>
-                                    <option value="white">⚪ White</option>
-                                    <option value="yellow">🟡 Yellow</option>
-                                </select>
+                                <button 
+                                    @click="openColorPicker('tag')" 
+                                    class="color-dropdown-button"
+                                    type="button"
+                                >
+                                    <div class="color-dropdown-content">
+                                        <span 
+                                            v-if="tagForm.color"
+                                            class="color-dropdown-circle" 
+                                            :class="{ white: tagForm.color === 'white' }"
+                                            :style="{ backgroundColor: getColorInfo(tagForm.color).hex }"
+                                        ></span>
+                                        <span v-else class="color-dropdown-circle empty"></span>
+                                        <div class="color-dropdown-info">
+                                            <span class="color-dropdown-name">{{ tagForm.color ? getColorInfo(tagForm.color).name : 'Select a color' }}</span>
+                                            <span v-if="tagForm.color" class="color-dropdown-hex">{{ getColorInfo(tagForm.color).hex }}</span>
+                                        </div>
+                                    </div>
+                                    <span class="color-dropdown-arrow">▼</span>
+                                </button>
                             </div>
                             <div v-if="tagError" class="ct-alert ct-alert-danger">{{ tagError }}</div>
                             <div class="flex space-x-2">
@@ -502,7 +853,7 @@
                 <!-- Tags Table -->
                 <div class="ct-card">
                     <div class="ct-card-header">
-                        <h3 class="font-semibold">{{ selectedType === 'persons' ? 'Person Tags' : 'Song Tags' }} ({{ tags.length }})</h3>
+                        <h3 class="font-semibold">{{ getDisplayName(selectedType) }} ({{ tags.length }})</h3>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="ct-table">
@@ -549,8 +900,20 @@
                                     <td class="font-semibold">{{ tag.name }}</td>
                                     <td class="text-sm text-gray-600">{{ tag.description || '-' }}</td>
                                     <td>
-                                        <span v-if="tag.color" :class="`color-dot ct-color-${tag.color}`" :title="tag.color"></span>
-                                        <span v-else class="text-gray-400">No color</span>
+                                        <div v-if="tag.color" class="flex items-center gap-4">
+                                            <span :class="`color-dot ct-color-${tag.color}`" :title="`${getColorInfo(tag.color).name} (${getColorInfo(tag.color).hex})`"></span>
+                                            <div>
+                                                <div class="font-medium text-sm">{{ getColorInfo(tag.color).name }}</div>
+                                                <div class="text-xs text-gray-500">{{ getColorInfo(tag.color).hex }}</div>
+                                            </div>
+                                        </div>
+                                        <div v-else class="flex items-center gap-4">
+                                            <span class="color-dot" style="background-color: #f3f4f6; border-color: #d1d5db;"></span>
+                                            <div>
+                                                <div class="font-medium text-sm text-gray-400">No color</div>
+                                                <div class="text-xs text-gray-400">-</div>
+                                            </div>
+                                        </div>
                                     </td>
                                     <td>
                                         <button @click="editTag(tag)" class="ct-btn ct-btn-outline-primary ct-btn-sm mr-2">Edit</button>
@@ -578,6 +941,55 @@
                 <div class="ct-toast-message">{{ toast.message }}</div>
             </div>
         </div>
+        
+        <!-- Color Picker Modal -->
+        <div v-if="showColorPicker" class="color-picker-modal" @click.self="closeColorPicker">
+            <div class="color-picker-content">
+                <div class="color-picker-header">
+                    <div>
+                        <h3 class="color-picker-title">Choose a Color</h3>
+                        <p style="font-size: 0.875rem; color: #6b7280; margin: 0.25rem 0 0 0;">Click a color to select it, or press Escape to cancel</p>
+                    </div>
+                    <button @click="closeColorPicker" class="color-picker-close">&times;</button>
+                </div>
+                
+                <div class="color-picker-body">
+                    <!-- No Color Option at top -->
+                    <div style="margin-bottom: 1rem;">
+                        <div 
+                            @click="selectColorInPicker('')"
+                            class="color-option"
+                            style="max-width: 280px;"
+                        >
+                            <span class="color-option-circle empty"></span>
+                            <div class="color-option-info">
+                                <div class="color-option-name">No Color</div>
+                                <div class="color-option-hex">Remove color</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="color-grid">
+                        <div 
+                            v-for="color in sortedColorOptions" 
+                            :key="color.value"
+                            @click="selectColorInPicker(color.value)"
+                            class="color-option"
+                        >
+                            <span 
+                                class="color-option-circle" 
+                                :class="{ white: color.value === 'white' }"
+                                :style="{ backgroundColor: color.hex }"
+                            ></span>
+                            <div class="color-option-info">
+                                <div class="color-option-name">{{ color.label }}</div>
+                                <div class="color-option-hex">{{ color.hex }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
@@ -594,7 +1006,7 @@
                 const loginError = ref('');
                 const loginStatus = ref('');
                 const tagError = ref('');
-                const selectedType = ref('persons');
+                const selectedType = ref('person');
                 const showCreateForm = ref(false);
                 const editingTag = ref(null);
                 const apiToken = ref('');
@@ -603,6 +1015,11 @@
                 const prefixFilter = ref('');
                 const bulkColor = ref('');
                 const isBulkOperating = ref(false);
+                const showBulkColorDropdown = ref(false);
+                const showTagColorDropdown = ref(false);
+                const showColorPicker = ref(false);
+                const colorPickerTarget = ref(''); // 'bulk' or 'tag'
+                const selectedColorInPicker = ref('');
                 const sortField = ref('name');
                 const sortDirection = ref('asc');
                 const toasts = ref([]);
@@ -645,6 +1062,80 @@
                         } else {
                             return bVal.localeCompare(aVal);
                         }
+                    });
+                });
+                
+                // Computed property for color options
+                const colorOptions = computed(() => {
+                    return [
+                        { value: '', label: 'Select a color', hex: '' },
+                        { value: 'parent', label: 'Parent', hex: '#6b7280' },
+                        { value: 'default', label: 'Default', hex: '#6b7280' },
+                        { value: 'accent', label: 'Accent', hex: '#007cba' },
+                        { value: 'amber', label: 'Amber', hex: '#f59e0b' },
+                        { value: 'basic', label: 'Basic', hex: '#6b7280' },
+                        { value: 'black', label: 'Black', hex: '#000000' },
+                        { value: 'blue', label: 'Blue', hex: '#3b82f6' },
+                        { value: 'critical', label: 'Critical', hex: '#dc2626' },
+                        { value: 'constructive', label: 'Constructive', hex: '#16a34a' },
+                        { value: 'destructive', label: 'Destructive', hex: '#dc2626' },
+                        { value: 'cyan', label: 'Cyan', hex: '#06b6d4' },
+                        { value: 'danger', label: 'Danger', hex: '#dc2626' },
+                        { value: 'emerald', label: 'Emerald', hex: '#10b981' },
+                        { value: 'error', label: 'Error', hex: '#dc2626' },
+                        { value: 'fuchsia', label: 'Fuchsia', hex: '#d946ef' },
+                        { value: 'gray', label: 'Gray', hex: '#6b7280' },
+                        { value: 'green', label: 'Green', hex: '#16a34a' },
+                        { value: 'indigo', label: 'Indigo', hex: '#6366f1' },
+                        { value: 'info', label: 'Info', hex: '#3b82f6' },
+                        { value: 'lime', label: 'Lime', hex: '#84cc16' },
+                        { value: 'magic', label: 'Magic', hex: '#8b5cf6' },
+                        { value: 'orange', label: 'Orange', hex: '#f97316' },
+                        { value: 'pink', label: 'Pink', hex: '#ec4899' },
+                        { value: 'purple', label: 'Purple', hex: '#a855f7' },
+                        { value: 'red', label: 'Red', hex: '#dc2626' },
+                        { value: 'rose', label: 'Rose', hex: '#f43f5e' },
+                        { value: 'sky', label: 'Sky', hex: '#0ea5e9' },
+                        { value: 'success', label: 'Success', hex: '#16a34a' },
+                        { value: 'teal', label: 'Teal', hex: '#14b8a6' },
+                        { value: 'violet', label: 'Violet', hex: '#8b5cf6' },
+                        { value: 'warning', label: 'Warning', hex: '#f59e0b' },
+                        { value: 'white', label: 'White', hex: '#ffffff' },
+                        { value: 'yellow', label: 'Yellow', hex: '#eab308' }
+                    ];
+                });
+                
+                // Computed property for sorted colors by similarity
+                const sortedColorOptions = computed(() => {
+                    const colors = colorOptions.value.filter(c => c.value !== '');
+                    
+                    // Sort colors by category and hue
+                    return colors.sort((a, b) => {
+                        const categoryA = getColorCategory(a.value);
+                        const categoryB = getColorCategory(b.value);
+                        
+                        // First sort by category
+                        if (categoryA !== categoryB) {
+                            return categoryA - categoryB;
+                        }
+                        
+                        // Within same category, sort by hue
+                        const hslA = hexToHsl(a.hex);
+                        const hslB = hexToHsl(b.hex);
+                        
+                        // For grayscale colors, sort by lightness
+                        if (categoryA === 1) {
+                            return hslA.l - hslB.l;
+                        }
+                        
+                        // For colored items, sort by hue, then saturation, then lightness
+                        if (Math.abs(hslA.h - hslB.h) > 5) {
+                            return hslA.h - hslB.h;
+                        }
+                        if (Math.abs(hslA.s - hslB.s) > 10) {
+                            return hslB.s - hslA.s; // Higher saturation first
+                        }
+                        return hslA.l - hslB.l;
                     });
                 });
                 
@@ -872,7 +1363,7 @@
                     isLoadingTags.value = true;
                     selectedTags.value = []; // Clear selection when loading new tags
                     try {
-                        const response = await apiRequest(`/tags?type=${selectedType.value}`);
+                        const response = await apiRequest(`/tags/${selectedType.value}`);
                         tags.value = response.data || [];
                         console.log('Tags loaded:', tags.value);
                     } catch (error) {
@@ -935,14 +1426,14 @@
                         };
                         
                         if (editingTag.value) {
-                            // Update existing tag
-                            await apiRequest(`/tags/${editingTag.value.id}?type=${selectedType.value}`, {
+                            // Update existing tag using PUT method
+                            await apiRequest(`/tags/${editingTag.value.id}`, {
                                 method: 'PUT',
                                 body: JSON.stringify(tagData)
                             });
                         } else {
                             // Create new tag
-                            await apiRequest(`/tags?type=${selectedType.value}`, {
+                            await apiRequest(`/tags/${selectedType.value}`, {
                                 method: 'POST',
                                 body: JSON.stringify(tagData)
                             });
@@ -1025,7 +1516,7 @@
                     }
                     
                     try {
-                        await apiRequest(`/tags/${tag.id}?type=${selectedType.value}`, {
+                        await apiRequest(`/tags/${selectedType.value}/${tag.id}`, {
                             method: 'DELETE'
                         });
                         showToast('success', 'Tag Deleted', `Tag "${tag.name}" was deleted successfully.`);
@@ -1102,12 +1593,12 @@
                                 throw new Error(`Tag with ID ${tagId} not found`);
                             }
                             
-                            return apiRequest(`/tags/${tagId}?type=${selectedType.value}`, {
+                            return apiRequest(`/tags/${tagId}`, {
                                 method: 'PUT',
                                 body: JSON.stringify({ 
                                     name: tag.name, // Include existing name
                                     description: tag.description || '', // Include existing description
-                                    color: bulkColor.value 
+                                    color: bulkColor.value
                                 })
                             });
                         });
@@ -1164,7 +1655,7 @@
                     
                     try {
                         const promises = selectedTags.value.map(tagId => 
-                            apiRequest(`/tags/${tagId}?type=${selectedType.value}`, {
+                            apiRequest(`/tags/${selectedType.value}/${tagId}`, {
                                 method: 'DELETE'
                             })
                         );
@@ -1182,6 +1673,181 @@
                         isBulkOperating.value = false;
                     }
                 };
+                
+                // Helper function to get display name for domain types
+                const getDisplayName = (domainType) => {
+                    const displayNames = {
+                        'person': 'Person Tags',
+                        'group': 'Group Tags', 
+                        'song': 'Song Tags',
+                        'appointment': 'Appointment Tags'
+                    };
+                    return displayNames[domainType] || `${domainType} Tags`;
+                };
+                
+                // Helper function to get color information
+                const getColorInfo = (colorName) => {
+                    const colorMap = {
+                        // System Colors
+                        'parent': { hex: '#6b7280', name: 'Parent', tailwind: 'gray-500' },
+                        'default': { hex: '#6b7280', name: 'Default', tailwind: 'gray-500' },
+                        'accent': { hex: '#007cba', name: 'Accent', tailwind: 'custom' },
+                        'basic': { hex: '#6b7280', name: 'Basic', tailwind: 'gray-500' },
+                        
+                        // Standard Colors
+                        'amber': { hex: '#f59e0b', name: 'Amber', tailwind: 'amber-500' },
+                        'black': { hex: '#000000', name: 'Black', tailwind: 'black' },
+                        'blue': { hex: '#3b82f6', name: 'Blue', tailwind: 'blue-500' },
+                        'cyan': { hex: '#06b6d4', name: 'Cyan', tailwind: 'cyan-500' },
+                        'emerald': { hex: '#10b981', name: 'Emerald', tailwind: 'emerald-500' },
+                        'fuchsia': { hex: '#d946ef', name: 'Fuchsia', tailwind: 'fuchsia-500' },
+                        'gray': { hex: '#6b7280', name: 'Gray', tailwind: 'gray-500' },
+                        'green': { hex: '#16a34a', name: 'Green', tailwind: 'green-600' },
+                        'indigo': { hex: '#6366f1', name: 'Indigo', tailwind: 'indigo-500' },
+                        'lime': { hex: '#84cc16', name: 'Lime', tailwind: 'lime-500' },
+                        'orange': { hex: '#f97316', name: 'Orange', tailwind: 'orange-500' },
+                        'pink': { hex: '#ec4899', name: 'Pink', tailwind: 'pink-500' },
+                        'purple': { hex: '#a855f7', name: 'Purple', tailwind: 'purple-500' },
+                        'red': { hex: '#dc2626', name: 'Red', tailwind: 'red-600' },
+                        'rose': { hex: '#f43f5e', name: 'Rose', tailwind: 'rose-500' },
+                        'sky': { hex: '#0ea5e9', name: 'Sky', tailwind: 'sky-500' },
+                        'teal': { hex: '#14b8a6', name: 'Teal', tailwind: 'teal-500' },
+                        'violet': { hex: '#8b5cf6', name: 'Violet', tailwind: 'violet-500' },
+                        'white': { hex: '#ffffff', name: 'White', tailwind: 'white' },
+                        'yellow': { hex: '#eab308', name: 'Yellow', tailwind: 'yellow-500' },
+                        
+                        // Semantic Colors
+                        'critical': { hex: '#dc2626', name: 'Critical', tailwind: 'red-600' },
+                        'constructive': { hex: '#16a34a', name: 'Constructive', tailwind: 'green-600' },
+                        'destructive': { hex: '#dc2626', name: 'Destructive', tailwind: 'red-600' },
+                        'danger': { hex: '#dc2626', name: 'Danger', tailwind: 'red-600' },
+                        'error': { hex: '#dc2626', name: 'Error', tailwind: 'red-600' },
+                        'info': { hex: '#3b82f6', name: 'Info', tailwind: 'blue-500' },
+                        'success': { hex: '#16a34a', name: 'Success', tailwind: 'green-600' },
+                        'warning': { hex: '#f59e0b', name: 'Warning', tailwind: 'amber-500' },
+                        'magic': { hex: '#8b5cf6', name: 'Magic', tailwind: 'violet-500' }
+                    };
+                    
+                    return colorMap[colorName] || { hex: '#6b7280', name: colorName, tailwind: 'gray-500' };
+                };
+                
+                // Helper function to convert hex to HSL for color sorting
+                const hexToHsl = (hex) => {
+                    if (!hex || hex === '') return { h: 0, s: 0, l: 0 };
+                    
+                    // Remove # if present
+                    hex = hex.replace('#', '');
+                    
+                    // Convert to RGB
+                    const r = parseInt(hex.substr(0, 2), 16) / 255;
+                    const g = parseInt(hex.substr(2, 2), 16) / 255;
+                    const b = parseInt(hex.substr(4, 2), 16) / 255;
+                    
+                    const max = Math.max(r, g, b);
+                    const min = Math.min(r, g, b);
+                    let h, s, l = (max + min) / 2;
+                    
+                    if (max === min) {
+                        h = s = 0; // achromatic
+                    } else {
+                        const d = max - min;
+                        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                        switch (max) {
+                            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                            case g: h = (b - r) / d + 2; break;
+                            case b: h = (r - g) / d + 4; break;
+                        }
+                        h /= 6;
+                    }
+                    
+                    return { h: h * 360, s: s * 100, l: l * 100 };
+                };
+                
+                // Function to get color category for special sorting
+                const getColorCategory = (colorValue) => {
+                    // System colors first
+                    if (['parent', 'default', 'basic'].includes(colorValue)) return 0;
+                    // Grayscale colors
+                    if (['black', 'gray', 'white'].includes(colorValue)) return 1;
+                    // Accent color
+                    if (colorValue === 'accent') return 2;
+                    // Regular colors
+                    return 3;
+                };
+                
+                // Custom dropdown functions
+                const selectBulkColor = (colorValue) => {
+                    bulkColor.value = colorValue;
+                    showBulkColorDropdown.value = false;
+                };
+                
+                const selectTagColor = (colorValue) => {
+                    tagForm.color = colorValue;
+                    showTagColorDropdown.value = false;
+                };
+                
+                const toggleBulkColorDropdown = () => {
+                    showBulkColorDropdown.value = !showBulkColorDropdown.value;
+                    showTagColorDropdown.value = false;
+                };
+                
+                const toggleTagColorDropdown = () => {
+                    showTagColorDropdown.value = !showTagColorDropdown.value;
+                    showBulkColorDropdown.value = false;
+                };
+                
+                const closeBothDropdowns = () => {
+                    showBulkColorDropdown.value = false;
+                    showTagColorDropdown.value = false;
+                };
+                
+                // Color picker modal functions
+                const openColorPicker = (target) => {
+                    colorPickerTarget.value = target;
+                    if (target === 'bulk') {
+                        selectedColorInPicker.value = bulkColor.value;
+                    } else if (target === 'tag') {
+                        selectedColorInPicker.value = tagForm.color;
+                    }
+                    showColorPicker.value = true;
+                    closeBothDropdowns();
+                };
+                
+                const closeColorPicker = () => {
+                    showColorPicker.value = false;
+                    selectedColorInPicker.value = '';
+                    colorPickerTarget.value = '';
+                };
+                
+                const selectColorInPicker = (colorValue) => {
+                    selectedColorInPicker.value = colorValue;
+                    // Directly apply the color selection
+                    confirmColorSelection();
+                };
+                
+                const confirmColorSelection = () => {
+                    if (colorPickerTarget.value === 'bulk') {
+                        bulkColor.value = selectedColorInPicker.value;
+                    } else if (colorPickerTarget.value === 'tag') {
+                        tagForm.color = selectedColorInPicker.value;
+                    }
+                    closeColorPicker();
+                };
+                
+                // Add click outside listener to close dropdowns and escape key handler
+                onMounted(() => {
+                    document.addEventListener('click', closeBothDropdowns);
+                    
+                    // Add escape key handler for color picker
+                    document.addEventListener('keydown', (event) => {
+                        if (event.key === 'Escape') {
+                            if (showColorPicker.value) {
+                                closeColorPicker();
+                            }
+                            closeBothDropdowns();
+                        }
+                    });
+                });
                 
                 // Check for stored authentication on mount
                 onMounted(() => {
@@ -1221,6 +1887,20 @@
                     prefixFilter,
                     bulkColor,
                     isBulkOperating,
+                    showBulkColorDropdown,
+                    showTagColorDropdown,
+                    showColorPicker,
+                    colorPickerTarget,
+                    selectedColorInPicker,
+                    selectBulkColor,
+                    selectTagColor,
+                    toggleBulkColorDropdown,
+                    toggleTagColorDropdown,
+                    closeBothDropdowns,
+                    openColorPicker,
+                    closeColorPicker,
+                    selectColorInPicker,
+                    confirmColorSelection,
                     toasts,
                     allSelected,
                     login,
@@ -1237,6 +1917,10 @@
                     selectByPrefix,
                     applyBulkColor,
                     bulkDelete,
+                    getDisplayName,
+                    getColorInfo,
+                    colorOptions,
+                    sortedColorOptions,
                     sortedTags,
                     sortField,
                     sortDirection,
