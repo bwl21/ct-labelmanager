@@ -732,11 +732,10 @@ tin<!DOCTYPE html>
                         </div>
                     </div>
                     <div class="ct-card-body">
-                        <!-- Selection Controls -->
-                        <div class="flex flex-wrap items-center gap-3 mb-3">
+                        <div class="flex flex-wrap items-center gap-4">
                             <div class="flex items-center gap-2">
-                                <button @click="selectAll" class="ct-btn ct-btn-outline-primary ct-btn-sm">Select All</button>
-                                <button @click="clearSelection" class="ct-btn ct-btn-outline-primary ct-btn-sm">Clear Selection</button>
+                                <button @click="selectAll" class="ct-btn ct-btn-outline-primary ct-btn-sm" style="height: 36px;">Select All</button>
+                                <button @click="clearSelection" class="ct-btn ct-btn-outline-primary ct-btn-sm" style="height: 36px;">Clear Selection</button>
                             </div>
                             
                             <div class="flex items-center gap-2">
@@ -745,20 +744,17 @@ tin<!DOCTYPE html>
                                     type="text" 
                                     placeholder="e.g., L:*" 
                                     class="ct-form-control" 
-                                    style="width: 120px; height: 32px; font-size: 13px;"
+                                    style="width: 120px; height: 36px;"
                                 >
-                                <button @click="selectByPrefix" class="ct-btn ct-btn-outline-primary ct-btn-sm">Select by Prefix</button>
+                                <button @click="selectByPrefix" class="ct-btn ct-btn-outline-primary ct-btn-sm" style="height: 36px;">Select by Prefix</button>
                             </div>
-                        </div>
-                        
-                        <!-- Action Controls -->
-                        <div class="flex flex-wrap items-center gap-3">
+                            
                             <div class="flex items-center gap-2">
                                 <button 
                                     @click="openColorPicker('bulk')" 
                                     class="color-dropdown-button"
                                     type="button"
-                                    style="min-width: 220px; height: 36px; font-size: 14px;"
+                                    style="min-width: 200px; height: 36px; font-size: 14px;"
                                 >
                                     <div class="color-dropdown-content">
                                         <span 
@@ -773,15 +769,15 @@ tin<!DOCTYPE html>
                                             <span v-if="bulkColor" class="color-dropdown-hex">{{ getColorInfo(bulkColor).hex }}</span>
                                         </div>
                                     </div>
-                                    <span class="color-dropdown-arrow">🎨</span>
+                                    <span class="color-dropdown-arrow">▼</span>
                                 </button>
-                                <button @click="applyBulkColor" :disabled="!bulkColor || isBulkOperating" class="ct-btn ct-btn-success ct-btn-sm">
+                                <button @click="applyBulkColor" :disabled="!bulkColor || isBulkOperating" class="ct-btn ct-btn-success ct-btn-sm" style="height: 36px; min-width: 100px;">
                                     <span v-if="isBulkOperating" class="spinner"></span>
                                     Apply Color
                                 </button>
                             </div>
                             
-                            <button @click="bulkDelete" :disabled="isBulkOperating" class="ct-btn ct-btn-danger ct-btn-sm">
+                            <button @click="bulkDelete" :disabled="isBulkOperating" class="ct-btn ct-btn-danger ct-btn-sm" style="height: 36px; min-width: 120px;">
                                 <span v-if="isBulkOperating" class="spinner"></span>
                                 Delete Selected
                             </button>
@@ -847,7 +843,7 @@ tin<!DOCTYPE html>
                                             <span v-if="tagForm.color" class="color-dropdown-hex">{{ getColorInfo(tagForm.color).hex }}</span>
                                         </div>
                                     </div>
-                                    <span class="color-dropdown-arrow">🎨</span>
+                                    <span class="color-dropdown-arrow">▼</span>
                                 </button>
                             </div>
                             <div v-if="tagError" class="ct-alert ct-alert-danger">{{ tagError }}</div>
