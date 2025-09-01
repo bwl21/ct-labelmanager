@@ -26,6 +26,32 @@ Advanced tag management interface for ChurchTools with enhanced UI, bulk operati
 - **⚡ Real-time Validation** - Client-side duplicate detection
 - **🛡️ Enhanced Error Handling** - Graceful handling of API errors and PHP warnings
 
+### ChurchTools Embedded Mode
+- **🔗 Embedded Detection** - Automatically detects ChurchTools environment
+- **🔐 Auto-Authentication** - Uses existing ChurchTools session (no login required)
+- **🌐 Smart API Requests** - Adapts between session cookies and login tokens
+- **📍 Base URL Detection** - Intelligent detection from referrer or parent window
+
+## 🏗️ Architecture
+
+### External File Structure
+The application uses a clean external file structure for better maintainability:
+
+```
+ct-labelmanager/
+├── index.html          # Clean HTML structure with external references
+├── styles.css          # Complete CSS styling (17KB)
+├── app.js              # Vue.js application logic (45KB)
+├── module.json         # ChurchTools module configuration
+└── documentation/      # Comprehensive docs
+```
+
+**Benefits:**
+- ✅ Better code organization and maintainability
+- ✅ Improved browser caching for external resources
+- ✅ ChurchTools embedded mode compatibility
+- ✅ Easier debugging and development
+
 ## 📦 Installation
 
 ### As ChurchTools Custom Module (Recommended)
@@ -71,27 +97,41 @@ npm install
 # Start development server
 npm run dev
 # or
-make dev
+python3 -m http.server 8000
 
-# Build package
-npm run build
+# Build package (two methods available)
+npm run build          # npm-based build
 # or
-make build
+node build.js          # Node.js build script
 ```
 
-See [BUILD.md](BUILD.md) for complete build automation documentation.
-npm run dev
-
-# Build for production
-npm run build
+#### Build Output
+Both build methods create identical packages:
 ```
+ct-labelmanager-v2.0.0.zip (23K)
+├── index.html      (21KB) - Clean HTML structure
+├── styles.css      (17KB) - Complete CSS styling
+├── app.js          (45KB) - Vue.js application
+├── module.json     - ChurchTools config
+├── README.md       - Documentation
+└── DEPLOYMENT.md   - Deployment guide
+```
+
+#### Testing Embedded Mode
+Add URL parameters to simulate ChurchTools embedded mode:
+```
+http://localhost:8000/?embedded=true&baseUrl=https://your-church.church.tools
+```
+
+See [EXTERNAL_FILES.md](EXTERNAL_FILES.md) for detailed architecture documentation.
 
 ## 🔧 Configuration
 
-The module is pre-configured for `testbernhard.church.tools`. To use with your ChurchTools instance:
+The application automatically detects the ChurchTools environment:
 
-1. Update the `baseUrl` in `src/main.ts`
-2. Build new package: `npm run build` or `make build`
+- **Embedded Mode:** Auto-detects ChurchTools URL and uses session authentication
+- **Standalone Mode:** Prompts for ChurchTools URL and credentials
+- **Default URL:** Pre-configured for `testbernhard.church.tools` for testing
 3. Upload the generated `ct-labelmanager-v{version}.zip` to ChurchTools
 
 ## 📋 Requirements
