@@ -6,7 +6,7 @@
   "scripts": {
     "build": "npm run clean && npm run package",
     "package": "npm run package:zip && npm run package:info",
-    "package:zip": "zip -r ct-labelmanager-v$npm_package_version.zip index.html module.json README.md DEPLOYMENT.md",
+    "package:zip": "zip -r ct-labelmanager-v$npm_package_version.zip index.html styles.css app.js module.json README.md DEPLOYMENT.md",
     "package:info": "npm run package:size && npm run package:contents",
     "package:size": "ls -lh ct-labelmanager-v$npm_package_version.zip | awk '{print \"Package size: \" $5}'",
     "package:contents": "echo '\\nPackage contents:' && unzip -l ct-labelmanager-v$npm_package_version.zip",
@@ -49,6 +49,8 @@
   "dependencies": {},
   "files": [
     "index.html",
+    "styles.css",
+    "app.js",
     "module.json",
     "README.md",
     "DEPLOYMENT.md"
