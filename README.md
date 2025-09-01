@@ -65,7 +65,21 @@ Advanced tag management interface for ChurchTools with enhanced UI, bulk operati
 git clone <repository-url>
 cd churchtools-label-manager
 
-# No build process needed - edit index.html directly
+# Install dependencies (optional, for build automation)
+npm install
+
+# Start development server
+npm run dev
+# or
+make dev
+
+# Build package
+npm run build
+# or
+make build
+```
+
+See [BUILD.md](BUILD.md) for complete build automation documentation.
 npm run dev
 
 # Build for production
@@ -77,8 +91,8 @@ npm run build
 The module is pre-configured for `testbernhard.church.tools`. To use with your ChurchTools instance:
 
 1. Update the `baseUrl` in `src/main.ts`
-2. Rebuild the module: `npm run build`
-3. Create new deployment package: `zip -r ct-labelmanager.zip dist/`
+2. Build new package: `npm run build` or `make build`
+3. Upload the generated `ct-labelmanager-v{version}.zip` to ChurchTools
 
 ## 📋 Requirements
 
@@ -88,7 +102,17 @@ The module is pre-configured for `testbernhard.church.tools`. To use with your C
 
 ## 🛠️ Development
 
-See [DEVELOPMENT.md](DEVELOPMENT.md) for detailed development instructions.
+### Quick Start
+```bash
+npm run dev        # Start development server
+npm run build      # Build deployment package
+npm run validate   # Validate files
+```
+
+### Documentation
+- [DEVELOPMENT.md](DEVELOPMENT.md) - Development guide and architecture
+- [BUILD.md](BUILD.md) - Build automation and deployment
+- [DEPLOYMENT.md](DEPLOYMENT.md) - Installation and configuration
 
 ## 📖 API Integration
 
