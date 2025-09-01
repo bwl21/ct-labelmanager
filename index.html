@@ -1166,6 +1166,16 @@ tin<!DOCTYPE html>
                 // API Helper Functions
                 const apiRequest = async (endpoint, options = {}) => {
                     const url = `${loginForm.baseUrl}/api${endpoint}`;
+                    const isEmbedded = isEmbeddedInChurchTools();
+                    
+                    console.log('API Request:', {
+                        endpoint,
+                        url,
+                        isEmbedded,
+                        hasToken: !!apiToken.value,
+                        baseUrl: loginForm.baseUrl
+                    });
+                    
                     const headers = {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
@@ -1174,8 +1184,11 @@ tin<!DOCTYPE html>
 
                     // Only add Authorization header if we have a token (standalone mode)
                     // In embedded mode, we rely on session cookies
-                    if (apiToken.value && !isEmbeddedInChurchTools()) {
+                    if (apiToken.value && !isEmbedded) {
                         headers['Authorization'] = `Login ${apiToken.value}`;
+                        console.log('Added Authorization header for standalone mode');
+                    } else if (isEmbedded) {
+                        console.log('Using session cookies for embedded mode');
                     }
 
                     const response = await fetch(url, {
@@ -1362,6 +1375,17 @@ tin<!DOCTYPE html>
                 const loadTags = async () => {
                     if (!isAuthenticated.value) return;
                     
+                    // Ensure base URL is set for embedded mode
+                    if (isEmbeddedInChurchTools() && !loginForm.baseUrl) {
+                        console.log('Re-detecting base URL for embedded mode...');
+                        if (document.referrer && document.referrer.includes('.church.tools')) {
+                            const referrerUrl = new URL(document.referrer);
+                            loginForm.baseUrl = `${referrerUrl.protocol}//${referrerUrl.hostname}`;
+                            console.log('Base URL set from referrer:', loginForm.baseUrl);
+                        }
+                    }
+                    
+                    console.log('Loading tags for type:', selectedType.value, 'Base URL:', loginForm.baseUrl);
                     isLoadingTags.value = true;
                     selectedTags.value = []; // Clear selection when loading new tags
                     try {
