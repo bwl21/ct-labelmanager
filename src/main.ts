@@ -76,6 +76,10 @@ const app = createApp({
         const sortDirection = ref<'asc' | 'desc'>('asc');
         const toasts = ref<Toast[]>([]);
 
+
+        
+
+
         const loginForm = reactive<LoginForm>({
             baseUrl: 'https://testbernhard.church.tools',
             username: '',
@@ -241,7 +245,6 @@ const app = createApp({
             const hasPhpWarnings = responseText.includes('<b>Warning</b>') || responseText.includes('<b>Notice</b>');
 
             try {
-                debugger;
                 if (hasPhpWarnings) {
                     // Extract JSON from response with PHP warnings
                     const jsonMatch = responseText.match(/\{[\s\S]*\}$/);
@@ -566,22 +569,25 @@ const app = createApp({
             tagError.value = '';
         };
 
-        const deleteTag = async (tag: Tag) => {
-            if (!confirm(`Are you sure you want to delete "${tag.name}"?`)) {
-                return;
-            }
 
-            try {
-                await apiRequest(`/tags/${tag.id}`, {
-                    method: 'DELETE'
-                });
-                showToast('success', 'Tag Deleted', `Tag "${tag.name}" was deleted successfully.`);
-                await loadTags();
-            } catch (error) {
-                debugger;
-                console.error('Error deleting tag:', error);
-                showToast('error', 'Delete Failed', `Failed to delete tag: ${(error as Error).message}`);
-            }
+
+        const deleteTag = (tag: Tag) => {
+            showDeleteConfirmation(
+                'Delete Tag',
+                `Are you sure you want to delete "${tag.name}"?\n\nThis action cannot be undone.`,
+                async () => {
+                    try {
+                        await apiRequest(`/tags/${tag.id}`, {
+                            method: 'DELETE'
+                        });
+                        showToast('success', 'Tag Deleted', `Tag "${tag.name}" was deleted successfully.`);
+                        await loadTags();
+                    } catch (error) {
+                        console.error('Error deleting tag:', error);
+                        showToast('error', 'Delete Failed', `Failed to delete tag: ${(error as Error).message}`);
+                    }
+                }
+            );
         };
 
 
@@ -716,6 +722,52 @@ const app = createApp({
             closeColorPicker();
         };
 
+        // Simple modal using native DOM
+        const showDeleteConfirmation = (title: string, message: string, callback: () => void) => {
+            // Create modal HTML
+            const modalHTML = `
+                <div id="delete-modal" class="modal-overlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 10000;">
+                    <div class="modal-content" style="background: white; border-radius: 8px; max-width: 500px; width: 90%; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+                        <div style="padding: 1.5rem 1.5rem 1rem; border-bottom: 1px solid #e9ecef;">
+                            <h3 style="margin: 0; font-size: 1.25rem; font-weight: 600;">${title}</h3>
+                        </div>
+                        <div style="padding: 1rem 1.5rem;">
+                            <p style="margin: 0; color: #6c757d; line-height: 1.5; white-space: pre-line;">${message}</p>
+                        </div>
+                        <div style="padding: 1rem 1.5rem 1.5rem; display: flex; justify-content: flex-end; gap: 0.5rem; border-top: 1px solid #e9ecef;">
+                            <button id="modal-cancel" class="ct-btn ct-btn-outline-secondary">Cancel</button>
+                            <button id="modal-confirm" class="ct-btn ct-btn-danger">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add to DOM
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            
+            const modal = document.getElementById('delete-modal');
+            const cancelBtn = document.getElementById('modal-cancel');
+            const confirmBtn = document.getElementById('modal-confirm');
+            
+            const closeModal = () => {
+                if (modal) {
+                    modal.remove();
+                }
+            };
+            
+            // Event listeners
+            modal?.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+            
+            cancelBtn?.addEventListener('click', closeModal);
+            
+            confirmBtn?.addEventListener('click', () => {
+                callback();
+                closeModal();
+            });
+        };
+
         // Missing function implementations
         const selectBulkColor = (colorValue: string) => {
             bulkColor.value = colorValue;
@@ -819,32 +871,43 @@ const app = createApp({
             }
         };
 
-        const bulkDelete = async () => {
+        const bulkDelete = () => {
             if (selectedTags.value.length === 0) {
                 showToast('warning', 'No Selection', 'Please select tags to delete');
                 return;
             }
 
-            if (!confirm(`Are you sure you want to delete ${selectedTags.value.length} selected tags? This action cannot be undone.`)) {
-                return;
-            }
+            const tagCount = selectedTags.value.length;
+            const tagNames = tags.value
+                .filter(tag => selectedTags.value.includes(tag.id))
+                .map(tag => tag.name)
+                .slice(0, 3)
+                .join(', ');
+            
+            const displayNames = tagCount > 3 ? `${tagNames} and ${tagCount - 3} more` : tagNames;
 
-            isBulkOperating.value = true;
-            try {
-                const promises = selectedTags.value.map(tagId => 
-                    apiRequest(`/tags/${tagId}`, { method: 'DELETE' })
-                );
+            showDeleteConfirmation(
+                'Delete Multiple Tags',
+                `Are you sure you want to delete ${tagCount} selected tags?\n\nTags: ${displayNames}\n\nThis action cannot be undone.`,
+                async () => {
+                    isBulkOperating.value = true;
+                    try {
+                        const promises = selectedTags.value.map(tagId => 
+                            apiRequest(`/tags/${tagId}`, { method: 'DELETE' })
+                        );
 
-                await Promise.all(promises);
-                showToast('success', 'Bulk Delete', `Deleted ${selectedTags.value.length} tags`);
-                await loadTags();
-                clearSelection();
-            } catch (error) {
-                console.error('Bulk delete failed:', error);
-                showToast('error', 'Bulk Delete Failed', (error as Error).message);
-            } finally {
-                isBulkOperating.value = false;
-            }
+                        await Promise.all(promises);
+                        showToast('success', 'Bulk Delete', `Deleted ${tagCount} tags successfully`);
+                        await loadTags();
+                        clearSelection();
+                    } catch (error) {
+                        console.error('Bulk delete failed:', error);
+                        showToast('error', 'Bulk Delete Failed', (error as Error).message);
+                    } finally {
+                        isBulkOperating.value = false;
+                    }
+                }
+            );
         };
 
         // Add click outside listener to close dropdowns and escape key handler
