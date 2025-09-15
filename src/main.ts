@@ -649,17 +649,29 @@ const app = createApp({
             return colorMap[colorName] || {hex: '#6b7280', name: colorName, tailwind: 'gray-500'};
         };
 
+        /**
+         * Converts a hex color string to RGB values (0-1)
+         * @throws {Error} If the hex string is invalid
+         */
+        const hexToRgb = (hex: string): [number, number, number] => {
+            const cleanHex = hex.startsWith('#') ? hex.slice(1) : hex;
+            if (cleanHex.length !== 6) {
+                return [0, 0, 0]; // Return black for invalid hex
+            }
+
+            return [
+                parseInt(cleanHex.slice(0, 2), 16) / 255,
+                parseInt(cleanHex.slice(2, 4), 16) / 255,
+                parseInt(cleanHex.slice(4, 6), 16) / 255
+            ];
+        };
+
         // Helper function to convert hex to HSL for color sorting
         const hexToHsl = (hex: string): HSL => {
             if (!hex || hex === '') return {h: 0, s: 0, l: 0};
 
-            // Remove # if present
-            hex = hex.replace('#', '');
-
-            // Convert to RGB
-            const r = parseInt(hex.substr(0, 2), 16) / 255;
-            const g = parseInt(hex.substr(2, 2), 16) / 255;
-            const b = parseInt(hex.substr(4, 2), 16) / 255;
+            // Convert to RGB using the new helper function
+            const [r, g, b] = hexToRgb(hex);
 
             const max = Math.max(r, g, b);
             const min = Math.min(r, g, b);
