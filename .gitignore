@@ -49,3 +49,4 @@ ct-labelmanager-v*.zip
 webpack.config.js
 tsconfig*.json
 .npmrc
+releases
