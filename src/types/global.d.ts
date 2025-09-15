@@ -1,9 +1,9 @@
-import { CompilerError } from '@vue/compiler-core';
+import { CodegenResult } from '@vue/compiler-core';
 
 declare global {
   interface Window {
     Vue: {
-      compile: (template: string) => { code: string; errors: CompilerError[] };
+      compile: typeof import('@vue/compiler-dom').compile;
     };
   }
 }

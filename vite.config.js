@@ -28,7 +28,16 @@ export default defineConfig({
   server: {
     port: 3000,
     open: true,
-    host: true
+    host: true,
+    allowedHosts: true, // Erlaubt alle Hosts (für Entwicklung)
+    cors: {
+      origin: [
+        'https://testbernhard.church.tools',
+        'https://deine-churchtools-instanz.church.tools',
+        // Weitere erlaubte ChurchTools-Instanzen hier hinzufügen
+      ],
+      credentials: true
+    }
   },
   build: {
     outDir: 'dist',

@@ -3,6 +3,48 @@ import {compile} from '@vue/compiler-dom';
 
 console.log('Starting app initialization...');
 
+// TypeScript interfaces
+interface Tag {
+    id: number;
+    name: string;
+    description?: string;
+    color: string;
+}
+
+interface Toast {
+    id: number;
+    type: string;
+    title: string;
+    message: string;
+    removing: boolean;
+}
+
+
+
+interface LoginForm {
+    baseUrl: string;
+    username: string;
+    password: string;
+}
+
+interface TagForm {
+    name: string;
+    description: string;
+    color: string;
+}
+
+interface ApiRequestOptions {
+    method?: string;
+    headers?: Record<string, string>;
+    body?: string;
+}
+
+interface HSL {
+    h: number;
+    s: number;
+    l: number;
+}
+
 // Make the compiler available globally for runtime template compilation
 window.Vue = {compile};
 
@@ -18,35 +60,35 @@ const app = createApp({
         const tagError = ref('');
         const selectedType = ref('person');
         const showCreateForm = ref(false);
-        const editingTag = ref(null);
+        const editingTag = ref<Tag | null>(null);
         const apiToken = ref('');
-        const personId = ref(null);
-        const selectedTags = ref([]);
+        const personId = ref<number | null>(null);
+        const selectedTags = ref<number[]>([]);
         const prefixFilter = ref('');
         const bulkColor = ref('');
         const isBulkOperating = ref(false);
         const showBulkColorDropdown = ref(false);
         const showTagColorDropdown = ref(false);
         const showColorPicker = ref(false);
-        const colorPickerTarget = ref(''); // 'bulk' or 'tag'
+        const colorPickerTarget = ref<'bulk' | 'tag' | ''>(''); // 'bulk' or 'tag'
         const selectedColorInPicker = ref('');
-        const sortField = ref('name');
-        const sortDirection = ref('asc');
-        const toasts = ref([]);
+        const sortField = ref<'name' | 'description' | 'color'>('name');
+        const sortDirection = ref<'asc' | 'desc'>('asc');
+        const toasts = ref<Toast[]>([]);
 
-        const loginForm = reactive({
+        const loginForm = reactive<LoginForm>({
             baseUrl: 'https://testbernhard.church.tools',
             username: '',
             password: ''
         });
 
-        const tagForm = reactive({
+        const tagForm = reactive<TagForm>({
             name: '',
             description: '',
             color: ''
         });
 
-        const tags = ref([]);
+        const tags = ref<Tag[]>([]);
 
         const allSelected = computed(() =>
             tags.value.length > 0 && selectedTags.value.length === tags.value.length
@@ -150,9 +192,9 @@ const app = createApp({
         });
 
         // Toast Functions
-        const showToast = (type, title, message, duration = 5000) => {
+        const showToast = (type: string, title: string, message: string, duration = 5000) => {
             const id = Date.now() + Math.random();
-            const toast = {id, type, title, message, removing: false};
+            const toast: Toast = {id, type, title, message, removing: false};
             toasts.value.push(toast);
 
             setTimeout(() => {
@@ -160,7 +202,7 @@ const app = createApp({
             }, duration);
         };
 
-        const removeToast = (id) => {
+        const removeToast = (id: number) => {
             const toast = toasts.value.find(t => t.id === id);
             if (toast) {
                 toast.removing = true;
@@ -174,9 +216,9 @@ const app = createApp({
         };
 
         // API Helper Functions
-        const apiRequest = async (endpoint, options = {}) => {
+        const apiRequest = async (endpoint: string, options: ApiRequestOptions = {}) => {
             const url = `${loginForm.baseUrl}/api${endpoint}`;
-            const headers = {
+            const headers: Record<string, string> = {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
                 ...options.headers
@@ -326,10 +368,10 @@ const app = createApp({
 
             } catch (error) {
                 console.error('Authentication error:', error);
-                loginError.value = error.message;
+                loginError.value = (error as Error).message;
 
                 // Check for CORS or network issues
-                if (error instanceof TypeError && error.message.includes('fetch')) {
+                if (error instanceof TypeError && (error as Error).message.includes('fetch')) {
                     loginError.value = 'Network error: Cannot connect to ChurchTools. Please check the URL and your internet connection.';
                 }
             } finally {
@@ -382,13 +424,13 @@ const app = createApp({
                 console.log('Tags loaded:', tags.value);
             } catch (error) {
                 console.error('Error loading tags:', error);
-                loginError.value = `Failed to load tags: ${error.message}`;
+                loginError.value = `Failed to load tags: ${(error as Error).message}`;
             } finally {
                 isLoadingTags.value = false;
             }
         };
 
-        const editTag = (tag) => {
+        const editTag = (tag: Tag) => {
             editingTag.value = tag;
             tagForm.name = tag.name;
             tagForm.description = tag.description || '';
@@ -462,33 +504,33 @@ const app = createApp({
             } catch (error) {
                 console.error('Error saving tag:', error);
 
-                let errorMessage = error.message;
+                let errorMessage = (error as Error).message;
                 let errorTitle = editingTag.value ? 'Update Failed' : 'Create Failed';
 
                 // Handle duplicate entry errors
-                if (error.message.includes('Duplicate entry') || error.message.includes('1062')) {
+                if ((error as Error).message.includes('Duplicate entry') || (error as Error).message.includes('1062')) {
                     errorTitle = 'Duplicate Tag';
                     errorMessage = `A tag with the name "${tagForm.name.trim()}" already exists. Please choose a different name.`;
                 }
                 // Handle validation errors from ChurchTools
-                else if (error.message.includes('validation')) {
+                else if ((error as Error).message.includes('validation')) {
                     try {
-                        const errorData = JSON.parse(error.message.split('HTTP 400: ')[1] || '{}');
+                        const errorData = JSON.parse((error as Error).message.split('HTTP 400: ')[1] || '{}');
                         if (errorData.errors && errorData.errors.length > 0) {
-                            const fieldErrors = errorData.errors.map(err => `${err.fieldId}: ${err.message}`).join(', ');
+                            const fieldErrors = errorData.errors.map((err: any) => `${err.fieldId}: ${err.message}`).join(', ');
                             errorMessage = `Validation error: ${fieldErrors}`;
                         } else {
-                            errorMessage = errorData.translatedMessage || error.message;
+                            errorMessage = errorData.translatedMessage || (error as Error).message;
                         }
                     } catch (parseError) {
-                        errorMessage = error.message;
+                        errorMessage = (error as Error).message;
                     }
                 }
                 // Handle server errors with HTML warnings
-                else if (error.message.includes('<b>Warning</b>') || error.message.includes('server.error')) {
+                else if ((error as Error).message.includes('<b>Warning</b>') || (error as Error).message.includes('server.error')) {
                     try {
                         // Extract JSON from HTML response
-                        const jsonMatch = error.message.match(/\{[\s\S]*\}$/);
+                        const jsonMatch = (error as Error).message.match(/\{[\s\S]*\}$/);
                         if (jsonMatch) {
                             const errorData = JSON.parse(jsonMatch[0]);
                             if (errorData.errors && errorData.errors.length > 0) {
@@ -524,7 +566,7 @@ const app = createApp({
             tagError.value = '';
         };
 
-        const deleteTag = async (tag) => {
+        const deleteTag = async (tag: Tag) => {
             if (!confirm(`Are you sure you want to delete "${tag.name}"?`)) {
                 return;
             }
@@ -538,160 +580,15 @@ const app = createApp({
             } catch (error) {
                 debugger;
                 console.error('Error deleting tag:', error);
-                showToast('error', 'Delete Failed', `Failed to delete tag: ${error.message}`);
+                showToast('error', 'Delete Failed', `Failed to delete tag: ${(error as Error).message}`);
             }
         };
 
-        // Bulk Operations
-        const toggleSelectAll = () => {
-            if (allSelected.value) {
-                selectedTags.value = [];
-            } else {
-                selectedTags.value = tags.value.map(tag => tag.id);
-            }
-        };
 
-        const toggleTagSelection = (tagId) => {
-            const index = selectedTags.value.indexOf(tagId);
-            if (index > -1) {
-                selectedTags.value.splice(index, 1);
-            } else {
-                selectedTags.value.push(tagId);
-            }
-        };
-
-        const selectAll = () => {
-            selectedTags.value = tags.value.map(tag => tag.id);
-        };
-
-        const clearSelection = () => {
-            selectedTags.value = [];
-        };
-
-        const selectByPrefix = () => {
-            if (!prefixFilter.value.trim()) {
-                showToast('warning', 'Missing Pattern', 'Please enter a prefix pattern (e.g., L:*)');
-                return;
-            }
-
-            const pattern = prefixFilter.value.trim().replace('*', '');
-            const matchingTags = tags.value.filter(tag =>
-                tag.name.toLowerCase().startsWith(pattern.toLowerCase())
-            );
-
-            selectedTags.value = matchingTags.map(tag => tag.id);
-            showToast('info', 'Tags Selected', `Selected ${matchingTags.length} tags matching "${pattern}"`);
-        };
-
-        const applyBulkColor = async () => {
-            if (!bulkColor.value) {
-                showToast('warning', 'No Color Selected', 'Please select a color');
-                return;
-            }
-
-            if (selectedTags.value.length === 0) {
-                showToast('warning', 'No Tags Selected', 'Please select tags to update');
-                return;
-            }
-
-            if (!confirm(`Apply ${bulkColor.value} color to ${selectedTags.value.length} selected tags?`)) {
-                return;
-            }
-
-            isBulkOperating.value = true;
-
-            try {
-                const promises = selectedTags.value.map(tagId => {
-                    // Find the tag to get its current name
-                    const tag = tags.value.find(t => t.id === tagId);
-                    if (!tag) {
-                        throw new Error(`Tag with ID ${tagId} not found`);
-                    }
-
-                    return apiRequest(`/tags/${tagId}`, {
-                        method: 'PUT',
-                        body: JSON.stringify({
-                            name: tag.name, // Include existing name
-                            description: tag.description || '', // Include existing description
-                            color: bulkColor.value
-                        })
-                    });
-                });
-
-                await Promise.all(promises);
-
-                showToast('success', 'Bulk Update Complete', `Successfully updated ${selectedTags.value.length} tags to ${bulkColor.value}`);
-                selectedTags.value = [];
-                bulkColor.value = '';
-                await loadTags();
-
-            } catch (error) {
-                console.error('Error applying bulk color:', error);
-
-                // Parse ChurchTools validation errors
-                let errorMessage = error.message;
-                if (error.message.includes('validation')) {
-                    try {
-                        const errorData = JSON.parse(error.message.split('HTTP 400: ')[1] || '{}');
-                        if (errorData.translatedMessage) {
-                            errorMessage = errorData.translatedMessage;
-                            if (errorData.errors && errorData.errors.length > 0) {
-                                const fieldErrors = errorData.errors.map(err => err.message).join(', ');
-                                errorMessage += ` Details: ${fieldErrors}`;
-                            }
-                        }
-                    } catch (parseError) {
-                        // Keep original error message
-                    }
-                }
-
-                showToast('error', 'Bulk Update Failed', `Failed to update tags: ${errorMessage}`);
-            } finally {
-                isBulkOperating.value = false;
-            }
-        };
-
-        const bulkDelete = async () => {
-            if (selectedTags.value.length === 0) {
-                showToast('warning', 'No Tags Selected', 'Please select tags to delete');
-                return;
-            }
-
-            const selectedTagNames = tags.value
-                .filter(tag => selectedTags.value.includes(tag.id))
-                .map(tag => tag.name)
-                .join(', ');
-
-            if (!confirm(`Are you sure you want to delete ${selectedTags.value.length} selected tags?\n\nTags: ${selectedTagNames}\n\nThis action cannot be undone.`)) {
-                return;
-            }
-
-            isBulkOperating.value = true;
-
-            try {
-                const promises = selectedTags.value.map(tagId =>
-                    apiRequest(`/tags/${selectedType.value}/${tagId}`, {
-                        method: 'DELETE'
-                    })
-                );
-
-                await Promise.all(promises);
-
-                showToast('success', 'Bulk Delete Complete', `Successfully deleted ${selectedTags.value.length} tags`);
-                selectedTags.value = [];
-                await loadTags();
-
-            } catch (error) {
-                console.error('Error bulk deleting tags:', error);
-                showToast('error', 'Bulk Delete Failed', `Failed to delete tags: ${error.message}`);
-            } finally {
-                isBulkOperating.value = false;
-            }
-        };
 
         // Helper function to get display name for domain types
-        const getDisplayName = (domainType) => {
-            const displayNames = {
+        const getDisplayName = (domainType: string) => {
+            const displayNames: Record<string, string> = {
                 'person': 'Person Tags',
                 'group': 'Group Tags',
                 'song': 'Song Tags',
@@ -701,8 +598,8 @@ const app = createApp({
         };
 
         // Helper function to get color information
-        const getColorInfo = (colorName) => {
-            const colorMap = {
+        const getColorInfo = (colorName: string) => {
+            const colorMap: Record<string, {hex: string, name: string, tailwind: string}> = {
                 // System Colors
                 'parent': {hex: '#6b7280', name: 'Parent', tailwind: 'gray-500'},
                 'default': {hex: '#6b7280', name: 'Default', tailwind: 'gray-500'},
@@ -747,7 +644,7 @@ const app = createApp({
         };
 
         // Helper function to convert hex to HSL for color sorting
-        const hexToHsl = (hex) => {
+        const hexToHsl = (hex: string): HSL => {
             if (!hex || hex === '') return {h: 0, s: 0, l: 0};
 
             // Remove # if present
@@ -760,7 +657,7 @@ const app = createApp({
 
             const max = Math.max(r, g, b);
             const min = Math.min(r, g, b);
-            let h, s, l = (max + min) / 2;
+            let h = 0, s = 0, l = (max + min) / 2;
 
             if (max === min) {
                 h = s = 0; // achromatic
@@ -785,7 +682,7 @@ const app = createApp({
         };
 
         // Function to get color category for special sorting
-        const getColorCategory = (colorValue) => {
+        const getColorCategory = (colorValue: string): number => {
             // System colors first
             if (['parent', 'default', 'basic'].includes(colorValue)) return 0;
             // Grayscale colors
@@ -796,13 +693,36 @@ const app = createApp({
             return 3;
         };
 
-        // Custom dropdown functions
-        const selectBulkColor = (colorValue) => {
+
+
+        const closeColorPicker = () => {
+            showColorPicker.value = false;
+            selectedColorInPicker.value = '';
+            colorPickerTarget.value = '';
+        };
+
+        const selectColorInPicker = (colorValue: string) => {
+            selectedColorInPicker.value = colorValue;
+            // Directly apply the color selection
+            confirmColorSelection();
+        };
+
+        const confirmColorSelection = () => {
+            if (colorPickerTarget.value === 'bulk') {
+                bulkColor.value = selectedColorInPicker.value;
+            } else if (colorPickerTarget.value === 'tag') {
+                tagForm.color = selectedColorInPicker.value;
+            }
+            closeColorPicker();
+        };
+
+        // Missing function implementations
+        const selectBulkColor = (colorValue: string) => {
             bulkColor.value = colorValue;
             showBulkColorDropdown.value = false;
         };
 
-        const selectTagColor = (colorValue) => {
+        const selectTagColor = (colorValue: string) => {
             tagForm.color = colorValue;
             showTagColorDropdown.value = false;
         };
@@ -822,37 +742,109 @@ const app = createApp({
             showTagColorDropdown.value = false;
         };
 
-        // Color picker modal functions
-        const openColorPicker = (target) => {
+        const openColorPicker = (target: 'bulk' | 'tag') => {
             colorPickerTarget.value = target;
-            if (target === 'bulk') {
-                selectedColorInPicker.value = bulkColor.value;
-            } else if (target === 'tag') {
-                selectedColorInPicker.value = tagForm.color;
-            }
+            selectedColorInPicker.value = target === 'bulk' ? bulkColor.value : tagForm.color;
             showColorPicker.value = true;
             closeBothDropdowns();
         };
 
-        const closeColorPicker = () => {
-            showColorPicker.value = false;
-            selectedColorInPicker.value = '';
-            colorPickerTarget.value = '';
-        };
-
-        const selectColorInPicker = (colorValue) => {
-            selectedColorInPicker.value = colorValue;
-            // Directly apply the color selection
-            confirmColorSelection();
-        };
-
-        const confirmColorSelection = () => {
-            if (colorPickerTarget.value === 'bulk') {
-                bulkColor.value = selectedColorInPicker.value;
-            } else if (colorPickerTarget.value === 'tag') {
-                tagForm.color = selectedColorInPicker.value;
+        const toggleSelectAll = () => {
+            if (allSelected.value) {
+                clearSelection();
+            } else {
+                selectAll();
             }
-            closeColorPicker();
+        };
+
+        const toggleTagSelection = (tagId: number) => {
+            const index = selectedTags.value.indexOf(tagId);
+            if (index > -1) {
+                selectedTags.value.splice(index, 1);
+            } else {
+                selectedTags.value.push(tagId);
+            }
+        };
+
+        const selectAll = () => {
+            selectedTags.value = tags.value.map(tag => tag.id);
+        };
+
+        const clearSelection = () => {
+            selectedTags.value = [];
+        };
+
+        const selectByPrefix = () => {
+            if (!prefixFilter.value.trim()) return;
+            
+            const prefix = prefixFilter.value.toLowerCase().trim();
+            const matchingTags = tags.value.filter(tag => 
+                tag.name.toLowerCase().startsWith(prefix)
+            );
+            selectedTags.value = matchingTags.map(tag => tag.id);
+        };
+
+        const applyBulkColor = async () => {
+            if (!bulkColor.value || selectedTags.value.length === 0) {
+                showToast('warning', 'Missing Selection', 'Please select tags and a color');
+                return;
+            }
+
+            isBulkOperating.value = true;
+            try {
+                const promises = selectedTags.value.map(tagId => {
+                    const tag = tags.value.find(t => t.id === tagId);
+                    if (tag) {
+                        return apiRequest(`/tags/${tag.id}`, {
+                            method: 'PUT',
+                            body: JSON.stringify({
+                                name: tag.name,
+                                description: tag.description || '',
+                                color: bulkColor.value
+                            })
+                        });
+                    }
+                    return Promise.resolve();
+                });
+
+                await Promise.all(promises);
+                showToast('success', 'Bulk Update', `Updated ${selectedTags.value.length} tags`);
+                await loadTags();
+                clearSelection();
+            } catch (error) {
+                console.error('Bulk color update failed:', error);
+                showToast('error', 'Bulk Update Failed', (error as Error).message);
+            } finally {
+                isBulkOperating.value = false;
+            }
+        };
+
+        const bulkDelete = async () => {
+            if (selectedTags.value.length === 0) {
+                showToast('warning', 'No Selection', 'Please select tags to delete');
+                return;
+            }
+
+            if (!confirm(`Are you sure you want to delete ${selectedTags.value.length} selected tags? This action cannot be undone.`)) {
+                return;
+            }
+
+            isBulkOperating.value = true;
+            try {
+                const promises = selectedTags.value.map(tagId => 
+                    apiRequest(`/tags/${tagId}`, { method: 'DELETE' })
+                );
+
+                await Promise.all(promises);
+                showToast('success', 'Bulk Delete', `Deleted ${selectedTags.value.length} tags`);
+                await loadTags();
+                clearSelection();
+            } catch (error) {
+                console.error('Bulk delete failed:', error);
+                showToast('error', 'Bulk Delete Failed', (error as Error).message);
+            } finally {
+                isBulkOperating.value = false;
+            }
         };
 
         // Add click outside listener to close dropdowns and escape key handler
@@ -879,7 +871,7 @@ const app = createApp({
 
             if (storedToken && storedPersonId && storedBaseUrl && storedUsername) {
                 apiToken.value = storedToken;
-                personId.value = parseInt(storedPersonId);
+                personId.value = parseInt(storedPersonId, 10);
                 loginForm.baseUrl = storedBaseUrl;
                 currentUser.value = storedUsername;
                 isAuthenticated.value = true;
@@ -945,7 +937,7 @@ const app = createApp({
             sortedTags,
             sortField,
             sortDirection,
-            sortBy: (field) => {
+            sortBy: (field: 'name' | 'description' | 'color') => {
                 if (sortField.value === field) {
                     sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc';
                 } else {
@@ -960,7 +952,7 @@ const app = createApp({
 });
 
 // Configure error handling
-app.config.errorHandler = (err, vm, info) => {
+app.config.errorHandler = (err: unknown, vm: any, info: string) => {
     console.error('Vue error:', err);
     console.error('Error in component:', vm);
     console.error('Error info:', info);
@@ -972,7 +964,7 @@ app.config.errorHandler = (err, vm, info) => {
             <div style="padding: 2rem; text-align: center;">
                 <h2>Ein Fehler ist aufgetreten</h2>
                 <p>Bitte laden Sie die Seite neu.</p>
-                <p><small>${err?.message || 'Unbekannter Fehler'}</small></p>
+                <p><small>${(err as Error)?.message || 'Unbekannter Fehler'}</small></p>
                 <button onclick="window.location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #007cba; color: white; border: none; border-radius: 4px; cursor: pointer;">
                     Seite neu laden
                 </button>
@@ -983,9 +975,8 @@ app.config.errorHandler = (err, vm, info) => {
 
 // Mount the app
 console.log('Attempting to mount Vue app...');
-let vm;
 try {
-    vm = app.mount('#app');
+    app.mount('#app');
     console.log('Vue app mounted successfully');
     // Notify that Vue has finished mounting
     document.dispatchEvent(new Event('vue-mounted'));
